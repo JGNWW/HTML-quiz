@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bloomreach CMS Quiz — Nederlandwereldwijd.nl</title>
+<style>
+  :root {
+    --br-yellow: #ffcb05;
+    --br-yellow-soft: #fff8dc;
+    --br-dark: #2f2f33;
+    --br-darker: #1f1f23;
+    --br-gray-bg: #f4f5f7;
+    --br-border: #d8dade;
+    --br-text: #1f1f23;
+    --br-muted: #6b6f76;
+    --br-blue: #1f6feb;
+    --br-green: #2ea043;
+    --br-red: #d1242f;
+    --br-info: #fff9d6;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; height: 100%; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; color: var(--br-text); background: #fff; font-size: 14px; }
+  body { display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+
+  /* Top */
+  .topbar { display: flex; align-items: center; height: 40px; background: var(--br-darker); color: #fff; padding: 0 16px; flex-shrink: 0; font-size: 12px; }
+  .topbar .brand { display: flex; align-items: center; gap: 8px; font-weight: 600; }
+  .topbar .brand .b-logo { width: 22px; height: 22px; border-radius: 50%; background: var(--br-yellow); color: var(--br-darker); font-weight: 800; display: grid; place-items: center; }
+  .topbar .quiz-status { margin-left: auto; display: flex; gap: 16px; align-items: center; }
+  .topbar .quiz-status .pill { background: #3a3a3f; padding: 3px 10px; border-radius: 999px; }
+
+  /* Main shell */
+  .shell { display: flex; flex: 1; min-height: 0; }
+  .leftnav { width: 56px; background: var(--br-dark); display: flex; flex-direction: column; align-items: center; padding: 12px 0; gap: 14px; flex-shrink: 0; }
+  .leftnav .b-logo { width: 32px; height: 32px; border-radius: 50%; background: var(--br-yellow); color: var(--br-darker); font-weight: 800; display: grid; place-items: center; font-size: 18px; }
+  .leftnav .nav-ic { width: 32px; height: 32px; display: grid; place-items: center; color: #cfcfd3; cursor: default; border-radius: 4px; }
+  .leftnav .nav-ic.active { background: #45454a; color: #fff; }
+
+  /* Three-pane */
+  .panes { flex: 1; display: grid; grid-template-columns: 240px 270px 1fr 280px; min-height: 0; }
+  .pane { background: #fff; border-right: 1px solid var(--br-border); overflow: auto; }
+  .pane:last-child { border-right: none; }
+  .pane-header { padding: 10px 12px; border-bottom: 1px solid var(--br-border); font-weight: 600; display: flex; align-items: center; justify-content: space-between; background: #fafbfc; position: sticky; top: 0; }
+  .pane-header .chev { color: var(--br-muted); }
+
+  /* Document tree */
+  .tree { padding: 10px; font-size: 13px; }
+  .tree input.search { width: 100%; padding: 6px 10px; border: 1px solid var(--br-border); border-radius: 4px; margin-bottom: 8px; }
+  .tree ul { list-style: none; padding-left: 14px; margin: 2px 0; }
+  .tree > ul { padding-left: 4px; }
+  .tree li { padding: 2px 0; color: #333; cursor: default; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .tree li .icon { color: var(--br-yellow); margin-right: 4px; }
+  .tree li .icon.doc { color: #6c757d; }
+  .tree li.active { background: #eaf3ff; color: var(--br-blue); }
+
+  /* Document list */
+  .doclist { padding: 0; }
+  .doclist .row { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-bottom: 1px solid #eef0f3; font-size: 13px; }
+  .doclist .row.active { background: #eaf3ff; }
+  .doclist .check { width: 18px; height: 18px; border-radius: 50%; background: var(--br-green); color: #fff; display: grid; place-items: center; font-size: 11px; flex-shrink: 0; }
+  .doclist .folder-ic { color: var(--br-yellow); }
+
+  /* Editor */
+  .editor { display: flex; flex-direction: column; min-width: 0; background: #fafbfc; }
+  .editor-tabs { display: flex; gap: 4px; padding: 8px 14px 0; border-bottom: 1px solid var(--br-border); background: #fff; align-items: center; }
+  .editor-tabs .tab { padding: 6px 12px; border: 1px solid transparent; border-bottom: none; border-radius: 4px 4px 0 0; font-size: 13px; color: var(--br-muted); cursor: default; }
+  .editor-tabs .tab.active { background: #fff; border-color: var(--br-border); color: var(--br-text); font-weight: 600; box-shadow: 0 1px 0 #fff; position: relative; top: 1px; }
+  .editor-tabs .flag { margin-left: auto; display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--br-muted); }
+  .editor-tabs .flag .flag-ic { width: 18px; height: 12px; background: linear-gradient(to bottom, #ae1c28 33%, #fff 33% 66%, #21468b 66%); display: inline-block; border: 1px solid #ccc; }
+  .core-banner { background: var(--br-info); border-bottom: 1px solid #e8d97a; padding: 8px 16px; font-size: 13px; }
+  .editor-body { padding: 16px; overflow: auto; flex: 1; }
+
+  .field-group { margin-bottom: 14px; }
+  .field-label { font-size: 12px; color: var(--br-muted); margin-bottom: 4px; display: block; }
+  .field-label .req { color: var(--br-red); }
+  .field-input, .field-textarea, .field-select { width: 100%; padding: 7px 10px; border: 1px solid var(--br-border); border-radius: 3px; background: #fff; font: inherit; }
+  .field-textarea { min-height: 64px; resize: vertical; }
+  .accordion { border: 1px solid var(--br-border); border-radius: 4px; background: #fff; margin-bottom: 12px; }
+  .accordion-head { padding: 10px 12px; display: flex; align-items: center; gap: 6px; font-weight: 600; border-bottom: 1px solid var(--br-border); background: #f8f9fb; }
+  .accordion-head .chev { color: var(--br-muted); }
+  .accordion-body { padding: 14px; }
+
+  /* Right panel */
+  .meta { padding: 14px 16px; font-size: 13px; }
+  .meta .group { margin-bottom: 14px; }
+  .meta .lbl { color: var(--br-muted); font-size: 12px; }
+  .meta .val { color: var(--br-text); }
+  .meta .group.authority { border: 1px solid var(--br-border); border-radius: 4px; padding: 10px; background: #fff; }
+  .meta .group.authority .lbl-head { font-weight: 600; display: flex; align-items: center; gap: 6px; margin-bottom: 6px; }
+
+  /* Bottom tab strip */
+  .bottombar { display: flex; gap: 6px; padding: 6px 16px; background: #ececef; border-top: 1px solid var(--br-border); align-items: center; flex-shrink: 0; }
+  .bottombar .doc-tab { background: #fff; border: 1px solid var(--br-border); border-radius: 4px; padding: 4px 12px; font-size: 12px; display: flex; align-items: center; gap: 6px; }
+  .bottombar .doc-tab .flag-ic { width: 16px; height: 11px; background: linear-gradient(to bottom, #ae1c28 33%, #fff 33% 66%, #21468b 66%); display: inline-block; border: 1px solid #ccc; }
+  .bottombar .doc-tab.active { border-color: var(--br-yellow); }
+  .bottombar .doc-tab .close { color: var(--br-muted); cursor: pointer; }
+
+  /* Quiz overlay - modal sits over the editor pane */
+  .quiz-overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+  .quiz-card {
+    position: relative;
+    margin: 24px auto;
+    max-width: 720px;
+    background: #fff;
+    border: 1px solid var(--br-border);
+    border-top: 4px solid var(--br-yellow);
+    border-radius: 6px;
+    box-shadow: 0 6px 24px rgba(0,0,0,.08);
+    padding: 22px 24px;
+    pointer-events: auto;
+  }
+  .quiz-card .q-header { display: flex; align-items: baseline; gap: 12px; margin-bottom: 6px; }
+  .quiz-card .q-num { font-size: 12px; color: var(--br-muted); }
+  .quiz-card .q-tag { background: var(--br-yellow-soft); border: 1px solid #f3e08a; color: #6a5300; padding: 2px 8px; border-radius: 999px; font-size: 11px; }
+  .quiz-card h2 { margin: 0 0 4px; font-size: 16px; }
+  .quiz-card .q-sub { color: var(--br-muted); font-size: 13px; margin-bottom: 14px; }
+  .quiz-card .q-context { background: #f6f8fa; border-left: 3px solid var(--br-yellow); padding: 8px 12px; font-size: 13px; margin-bottom: 14px; border-radius: 0 3px 3px 0; }
+  .quiz-card .q-context code { background: #eef0f3; padding: 1px 5px; border-radius: 3px; font-size: 12px; }
+
+  .options { display: flex; flex-direction: column; gap: 8px; }
+  .option {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 10px 12px; border: 1px solid var(--br-border); border-radius: 4px;
+    background: #fff; cursor: pointer; transition: .15s;
+  }
+  .option:hover { border-color: #9ec5ff; background: #f4f9ff; }
+  .option.selected { border-color: var(--br-blue); background: #eaf3ff; }
+  .option.correct { border-color: var(--br-green); background: #e6f7eb; }
+  .option.wrong { border-color: var(--br-red); background: #fdecee; }
+  .option .opt-letter { width: 22px; height: 22px; border-radius: 50%; background: #eef0f3; color: var(--br-muted); display: grid; place-items: center; font-size: 12px; font-weight: 600; flex-shrink: 0; }
+  .option.selected .opt-letter { background: var(--br-blue); color: #fff; }
+  .option.correct .opt-letter { background: var(--br-green); color: #fff; }
+  .option.wrong .opt-letter { background: var(--br-red); color: #fff; }
+  .option .opt-text { flex: 1; }
+  .option code { background: #eef0f3; padding: 1px 5px; border-radius: 3px; font-size: 12px; }
+
+  .multi-fields { display: grid; gap: 10px; }
+  .multi-fields .mf-row { display: grid; grid-template-columns: 140px 1fr; gap: 10px; align-items: center; }
+  .multi-fields .mf-row .mini { font-size: 12px; color: var(--br-muted); }
+
+  .feedback { margin-top: 14px; padding: 10px 12px; border-radius: 4px; font-size: 13px; display: none; }
+  .feedback.show { display: block; }
+  .feedback.ok { background: #e6f7eb; border: 1px solid #b6e2c1; color: #1e6e2d; }
+  .feedback.no { background: #fdecee; border: 1px solid #f3b8be; color: #8a1f27; }
+  .feedback strong { display: block; margin-bottom: 4px; }
+
+  .q-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 16px; }
+  .btn {
+    border: 1px solid var(--br-border); background: #fff; padding: 7px 14px; border-radius: 4px;
+    font: inherit; cursor: pointer; color: var(--br-text);
+  }
+  .btn:hover { background: #f4f5f7; }
+  .btn.primary { background: var(--br-yellow); border-color: #e3b400; color: #1f1f23; font-weight: 600; }
+  .btn.primary:hover { background: #ffd72e; }
+  .btn:disabled { opacity: .5; cursor: not-allowed; }
+
+  .progress-wrap { flex: 1; height: 6px; background: #ececef; border-radius: 3px; overflow: hidden; margin: 0 16px; max-width: 200px; }
+  .progress-bar { height: 100%; background: var(--br-yellow); width: 0%; transition: width .3s; }
+
+  /* Start & End screens */
+  .screen {
+    position: absolute; inset: 0; background: rgba(255,255,255,.96);
+    display: grid; place-items: center; padding: 24px; overflow: auto;
+  }
+  .screen .card {
+    max-width: 640px; background: #fff; border: 1px solid var(--br-border);
+    border-top: 4px solid var(--br-yellow); border-radius: 6px; padding: 28px;
+    box-shadow: 0 6px 24px rgba(0,0,0,.08);
+  }
+  .screen .card h1 { margin: 0 0 6px; display: flex; align-items: center; gap: 10px; }
+  .screen .card h1 .b-logo { width: 30px; height: 30px; border-radius: 50%; background: var(--br-yellow); color: var(--br-darker); font-weight: 800; display: grid; place-items: center; }
+  .screen .card p { color: #444; line-height: 1.5; }
+  .screen .card ul { padding-left: 20px; line-height: 1.7; color: #444; }
+  .score { display: flex; gap: 18px; margin: 14px 0; }
+  .score .box { flex: 1; border: 1px solid var(--br-border); border-radius: 6px; padding: 14px; text-align: center; }
+  .score .box .num { font-size: 28px; font-weight: 700; color: var(--br-text); }
+  .score .box .lbl { font-size: 12px; color: var(--br-muted); text-transform: uppercase; letter-spacing: .5px; }
+  .review { margin-top: 14px; max-height: 280px; overflow: auto; border-top: 1px solid var(--br-border); padding-top: 10px; }
+  .review .r-item { padding: 8px 0; border-bottom: 1px solid #eef0f3; font-size: 13px; }
+  .review .r-item .r-q { font-weight: 600; }
+  .review .r-item.ok .r-mark { color: var(--br-green); }
+  .review .r-item.no .r-mark { color: var(--br-red); }
+  .hidden { display: none !important; }
+
+  /* Make middle pane flex so overlay positions nicely */
+  .editor-wrap { position: relative; display: flex; flex-direction: column; min-width: 0; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand"><span class="b-logo">B</span><span>Bloomreach Content</span></div>
+  <div class="quiz-status">
+    <span class="pill">Redacteur: <span id="topUser">redactie@nww</span></span>
+    <span class="pill" id="topScore">Vraag 0 / 20</span>
+  </div>
+</div>
+
+<div class="shell">
+  <nav class="leftnav">
+    <div class="b-logo">B</div>
+    <div class="nav-ic">⌂</div>
+    <div class="nav-ic">▶</div>
+    <div class="nav-ic active">▦</div>
+    <div class="nav-ic">📄</div>
+    <div class="nav-ic">💡</div>
+  </nav>
+
+  <div class="panes">
+    <!-- Pane 1: Document tree -->
+    <div class="pane">
+      <div class="pane-header">Documents <span class="chev">▾</span></div>
+      <div class="tree">
+        <input class="search" placeholder="Search">
+        <ul>
+          <li>▾ 📁 NederlandWereldwijd</li>
+          <ul>
+            <li>▾ 📁 Pagina's</li>
+            <ul>
+              <li>📄 Thema's</li>
+              <li>▾ 📁 Onderwerpen</li>
+              <ul>
+                <li>📄 Adoptie</li>
+                <li>📄 Advocaten Thailand</li>
+                <li>📄 Afspraak maken</li>
+                <li>📄 Anw</li>
+                <li>📄 AOW</li>
+                <li>📄 Asiel aanvragen</li>
+                <li>📄 Auto exporteren</li>
+                <li>📄 Auto importeren</li>
+                <li>📄 Basisexamen inburgering</li>
+                <li class="active">📄 Belastingaangifte</li>
+                <li>📄 Bestolen in het buitenland</li>
+                <li>📄 BRP</li>
+                <li>📄 BSN</li>
+                <li>📄 Crisis</li>
+                <li>📄 DigiD</li>
+              </ul>
+            </ul>
+          </ul>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Pane 2: Document list -->
+    <div class="pane">
+      <div class="pane-header"><span>✓ Name ▾</span><span class="chev">⤢</span></div>
+      <div class="doclist">
+        <div class="row"><div class="check">✓</div><span class="folder-ic">📁</span>Belastingaangifte</div>
+        <div class="row active"><div class="check">✓</div><span class="folder-ic">📁</span>Belastingaangifte vanuit Thailand</div>
+        <div class="row"><div class="check">✓</div><span class="folder-ic">📁</span>Geen inkomsten uit Nederland</div>
+        <div class="row"><div class="check">✓</div><span class="folder-ic">📁</span>Hoe aangifte doen</div>
+        <div class="row"><div class="check">✓</div><span class="folder-ic">📁</span>Inkomensverklaring</div>
+        <div class="row"><div class="check">✓</div><span class="folder-ic">📁</span>Inkomsten uit 2 landen</div>
+        <div class="row"><div class="check">✓</div><span class="folder-ic">📁</span>Inkomstenbelasting betalen</div>
+        <div class="row"><div class="check">✓</div><span class="folder-ic">📁</span>Jaar van verhuizing naar het buitenland</div>
+        <div class="row"><div class="check">✓</div><span class="folder-ic">📁</span>Jaar van verhuizing naar Nederland</div>
+        <div class="row"><div class="check">✓</div><span class="folder-ic">📁</span>Nederlandse belastingvoordelen</div>
+        <div class="row"><div class="check">✓</div><span class="folder-ic">📁</span>Pensioen uit Nederland</div>
+        <div class="row"><div class="check">✓</div><span class="folder-ic">📁</span>Sociale verzekeringen betalen</div>
+        <div class="row"><div class="check">✓</div><span class="folder-ic">📁</span>Tweede woning in Nederland</div>
+        <div class="row"><div class="check">✓</div><span class="folder-ic">📁</span>Verdragslanden</div>
+      </div>
+    </div>
+
+    <!-- Pane 3: Editor (with quiz overlay) -->
+    <div class="editor-wrap">
+      <div class="editor">
+        <div class="editor-tabs">
+          <div class="tab active">Edit</div>
+          <div class="tab">Publication</div>
+          <div class="tab">Document</div>
+          <div class="tab">View</div>
+          <div class="flag"><span class="flag-ic"></span>Dutch</div>
+        </div>
+        <div class="core-banner">Core document (live)</div>
+        <div class="editor-body">
+          <div class="field-group">
+            <label class="field-label">Title <span class="req">*</span></label>
+            <input class="field-input" value="Belastingaangifte doen in Thailand">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Short title</label>
+            <input class="field-input" value="">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Introduction</label>
+            <textarea class="field-textarea">Bent u Nederlander en doet u belastingaangifte in Thailand? Neem contact op met een belastingadviseur in Thailand als u vragen heeft. De Nederlandse ambassade in Bangkok kan u geen advies geven.</textarea>
+          </div>
+          <div class="accordion">
+            <div class="accordion-head"><span class="chev">▾</span> Call to action</div>
+          </div>
+          <div class="accordion">
+            <div class="accordion-head"><span class="chev">▾</span> Contentblokken</div>
+            <div class="accordion-body">
+              <h3 style="margin:0 0 6px;font-size:15px">Belastingadviseurs in Thailand</h3>
+              <p style="margin:0;color:#444">De ambassade heeft een lijst opgesteld met een aantal Engelssprekende belasting- en financieel adviseurs in Bangkok…</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quiz overlay -->
+      <div class="quiz-overlay" id="quizOverlay">
+        <div class="quiz-card" id="quizCard"></div>
+      </div>
+
+      <!-- Start screen -->
+      <div class="screen" id="startScreen">
+        <div class="card">
+          <h1><span class="b-logo">B</span> Bloomreach CMS Quiz</h1>
+          <p>Test je kennis van het CMS <strong>Bloomreach</strong> en de schrijfwijzer van <em>Nederlandwereldwijd.nl</em>.</p>
+          <ul>
+            <li><strong>20 random vragen</strong> uit een grotere pool</li>
+            <li>Onderwerpen: pagina's aanmaken in mappen, tekst invoeren, URL's, headingstructuur (H1/H2/H3), HTML-opmaak, https-links, alle velden invullen, metadescription, alt-tekst, accordeons en meer</li>
+            <li>Je krijgt direct feedback na elk antwoord</li>
+          </ul>
+          <div style="margin-top: 18px; display:flex; gap: 10px; align-items:center;">
+            <button class="btn primary" onclick="startQuiz()">Start de quiz</button>
+            <span style="color:var(--br-muted); font-size:12px">Veel succes, redacteur!</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- End screen -->
+      <div class="screen hidden" id="endScreen">
+        <div class="card">
+          <h1><span class="b-logo">B</span> Resultaat</h1>
+          <div class="score">
+            <div class="box"><div class="num" id="scoreNum">0</div><div class="lbl">Goed</div></div>
+            <div class="box"><div class="num" id="scoreTotal">20</div><div class="lbl">Totaal</div></div>
+            <div class="box"><div class="num" id="scorePct">0%</div><div class="lbl">Score</div></div>
+          </div>
+          <div id="verdict" style="font-size:15px; padding: 10px 0;"></div>
+          <div class="review" id="review"></div>
+          <div style="margin-top: 14px; display:flex; gap: 10px;">
+            <button class="btn primary" onclick="startQuiz()">Opnieuw (nieuwe 20 vragen)</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pane 4: Metadata -->
+    <div class="pane">
+      <div class="meta">
+        <div class="group">
+          <div class="lbl">Topics (Onderwerpen)</div>
+          <div class="val">• belastingaangifte</div>
+        </div>
+        <div class="group">
+          <div class="lbl">Countries</div>
+          <div class="val">Thailand</div>
+        </div>
+        <div class="group">
+          <div class="lbl">Cooperating Partner(s)</div>
+          <div class="val">Ministerie van Buitenlandse Zaken</div>
+        </div>
+        <div class="group authority">
+          <div class="lbl-head"><span class="chev">▾</span> Authority</div>
+          <div class="lbl">Authority</div>
+          <div class="val">Ministerie van Buitenlandse Zaken</div>
+        </div>
+        <div class="group">
+          <div class="lbl">Creator</div>
+          <div class="val">Ministerie van Buitenlandse Zaken</div>
+        </div>
+        <div class="group">
+          <div class="lbl">Rights holder</div>
+          <div class="val">Ministerie van Buitenlandse Zaken</div>
+        </div>
+        <div class="group">
+          <div class="lbl">Publisher</div>
+          <div class="val">Ministerie van Buitenlandse Zaken</div>
+        </div>
+        <div class="group">
+          <div class="lbl">Page type</div>
+          <div class="val">Webpagina</div>
+        </div>
+        <div class="group">
+          <div class="lbl">FTG types</div>
+          <div class="val">Informatiepagina</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="bottombar">
+  <div class="doc-tab active"><span class="flag-ic"></span>Belastingaangifte vanuit T… <span class="close">✕</span></div>
+  <div class="doc-tab"><span class="flag-ic"></span>Afspraak maken <span class="close">✕</span></div>
+  <div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
+  <span style="font-size:12px; color: var(--br-muted)" id="progressText">0 / 20</span>
+</div>
+
+<script>
+/* ============================================================
+   QUESTION POOL — 25 vragen, 20 worden willekeurig gekozen
+   Types:
+     'mc' = multiple choice (één goed antwoord, index in answer)
+     'multi' = meerdere goed (answer = array van indexen)
+   ============================================================ */
+const POOL = [
+  {
+    tag: "Pagina aanmaken",
+    q: "Je wilt een nieuwe pagina maken over 'Pensioen uit Nederland' voor Thailand. Waar plaats je deze in de documentenboom?",
+    context: "Kijk naar het linkermenu: NederlandWereldwijd ▸ Pagina's ▸ Onderwerpen ▸ …",
+    type: "mc",
+    options: [
+      "Direct onder 'NederlandWereldwijd' als losse pagina",
+      "Onder 'Pagina's' ▸ 'Onderwerpen' ▸ in de juiste onderwerpmap",
+      "In een nieuwe rootmap die je zelf aanmaakt",
+      "Onder 'Thema's' want het gaat over Thailand"
+    ],
+    answer: 1,
+    explain: "Pagina's worden geordend per onderwerp in de map Pagina's ▸ Onderwerpen. Zo blijft de structuur consistent en herbruikbaar voor andere landen."
+  },
+  {
+    tag: "Nieuwe pagina",
+    q: "Bij het aanmaken van een nieuwe pagina in Bloomreach: welke handeling klopt?",
+    type: "mc",
+    options: [
+      "Rechtsklik op de juiste map → 'New' → kies het juiste documenttype (bv. Webpagina)",
+      "Sleep een bestaande pagina naar de map en hernoem",
+      "Maak eerst de pagina in Word en upload als .docx",
+      "Maak een kopie van een live-pagina en publiceer direct"
+    ],
+    answer: 0,
+    explain: "In Bloomreach maak je een nieuwe pagina aan via rechtsklikken op een map en 'New' te kiezen. Je selecteert het juiste documenttype (zoals Webpagina/Informatiepagina)."
+  },
+  {
+    tag: "URL",
+    q: "Welke URL voldoet aan de schrijfwijzer voor Nederlandwereldwijd.nl?",
+    context: "Richtlijnen: kort, leesbaar, geen hoofdletters, zonder leestekens, lidwoorden weglaten, max. 100 tekens.",
+    type: "mc",
+    options: [
+      "/Onderwerpen/De_Belastingaangifte_Doen_In_Thailand/",
+      "/onderwerpen/belastingaangifte-thailand",
+      "/onderwerpen/belastingaangifte-doen-in-thailand!",
+      "/Onderwerpen/belastingaangifte/Thailand?id=123"
+    ],
+    answer: 1,
+    explain: "Korte, leesbare URL zonder hoofdletters, leestekens en lidwoorden. Bevat de keywords (belastingaangifte + thailand)."
+  },
+  {
+    tag: "Headings",
+    q: "Welke heading-volgorde is correct op een webpagina?",
+    type: "mc",
+    options: [
+      "H1 → H3 → H2 → H4",
+      "H2 → H1 → H3",
+      "H1 → H2 → H3",
+      "H3 → H2 → H1"
+    ],
+    answer: 2,
+    explain: "Houd altijd de volgorde H1 → H2 → H3 aan. Een H1 per pagina (de titel), daaronder H2's voor secties, en pas een H3 binnen een H2. Belangrijk voor SEO én screenreaders."
+  },
+  {
+    tag: "Headings",
+    q: "Waarom is een goede heading-structuur belangrijk?",
+    type: "multi",
+    options: [
+      "Google gebruikt koppen om de pagina te indexeren (SEO)",
+      "Screenreaders gebruiken koppen om de pagina te navigeren (toegankelijkheid)",
+      "Lezers kunnen de pagina makkelijker scannen",
+      "Het maakt de pagina automatisch sneller laden"
+    ],
+    answer: [0,1,2],
+    explain: "Heading-structuur is cruciaal voor SEO, toegankelijkheid (WCAG/screenreaders) en scanbaarheid. Het beïnvloedt de laadtijd van een pagina niet."
+  },
+  {
+    tag: "HTML opmaak",
+    q: "Een redacteur plakt tekst uit Word in Bloomreach. Wat is de juiste werkwijze?",
+    type: "mc",
+    options: [
+      "Plakken als 'rich text' met alle Word-opmaak behouden",
+      "Plakken als platte tekst en in Bloomreach opnieuw opmaken met de editor-knoppen",
+      "Eerst HTML toevoegen met inline-styles voor lettertype en kleur",
+      "Direct publiceren — Bloomreach maakt het wel op"
+    ],
+    answer: 1,
+    explain: "Plak altijd als platte tekst (of gebruik 'paste as text'). Word brengt vervuilde HTML (span-style, font-family, mso-…) mee die de pagina inconsistent en moeilijk onderhoudbaar maakt."
+  },
+  {
+    tag: "HTML vervuiling",
+    q: "Welke HTML hieronder is 'vervuild' en moet je opschonen voor publicatie?",
+    type: "mc",
+    options: [
+      "<p>Lees meer over <a href='https://www.svb.nl'>de SVB</a>.</p>",
+      "<p><span style='font-family:Calibri;mso-fareast-language:NL'>Lees meer<o:p></o:p></span></p>",
+      "<h2>Pensioen aanvragen</h2>",
+      "<ul><li>Paspoort</li><li>ID-kaart</li></ul>"
+    ],
+    answer: 1,
+    explain: "Inline font-family, mso-* attributen en <o:p>-tags zijn typische Word/Outlook-vervuiling. Verwijderen: het breekt de huisstijl, is slecht voor toegankelijkheid en onderhoud."
+  },
+  {
+    tag: "https",
+    q: "Hoe hoort een externe link in het CMS te beginnen?",
+    type: "mc",
+    options: [
+      "http://",
+      "https://",
+      "www.",
+      "//"
+    ],
+    answer: 1,
+    explain: "Altijd <code>https://</code>. Onbeveiligd HTTP wordt door browsers gemarkeerd als 'Niet veilig' en is slecht voor SEO en privacy."
+  },
+  {
+    tag: "https",
+    q: "Je krijgt deze link aangeleverd: <code>http://www.rdw.nl/rijbewijs</code>. Wat doe je?",
+    type: "mc",
+    options: [
+      "Plaats hem zoals geleverd",
+      "Verander <code>http://</code> in <code>https://</code> en test of de pagina werkt",
+      "Plaats hem als <code>www.rdw.nl/rijbewijs</code> zonder protocol",
+      "Plaats hem als platte tekst zonder link"
+    ],
+    answer: 1,
+    explain: "Maak er https van en controleer of de link werkt. https is verplicht voor overheidssites."
+  },
+  {
+    tag: "Velden invullen",
+    q: "Welke velden moeten op een Bloomreach-pagina altijd zijn ingevuld voordat je publiceert?",
+    type: "multi",
+    options: [
+      "Title",
+      "Introduction",
+      "Metadescription",
+      "Topics / Onderwerpen",
+      "Een 'leuk weetje' veld"
+    ],
+    answer: [0,1,2,3],
+    explain: "Title, Introduction, Metadescription en metadata zoals Topics horen altijd ingevuld. Lege metadescription = Google verzint zelf een (vaak slechte) tekst. Een 'leuk weetje' veld bestaat niet."
+  },
+  {
+    tag: "Metadescription",
+    q: "Wat is de juiste lengte voor een metadescription?",
+    type: "mc",
+    options: [
+      "Tussen 50 en 80 tekens",
+      "Tussen 130 en 156 tekens",
+      "Minimaal 200 tekens",
+      "Maakt niet uit, Google bepaalt het toch"
+    ],
+    answer: 1,
+    explain: "Tussen 130 en 156 tekens (incl. spaties), uniek per pagina, met zoekwoorden en een call to action."
+  },
+  {
+    tag: "Title",
+    q: "Wat is de maximale lengte van een titel volgens de schrijfwijzer?",
+    type: "mc",
+    options: ["50 tekens", "70 tekens", "100 tekens", "Geen limiet"],
+    answer: 1,
+    explain: "Maximaal 70 tekens inclusief spaties. De titel bevat de belangrijkste zoekwoordencombinatie en wordt maar 1 keer op de pagina gebruikt."
+  },
+  {
+    tag: "Intro",
+    q: "Hoe lang mag een introductie maximaal zijn (richtlijn)?",
+    type: "mc",
+    options: ["20 woorden", "50 woorden", "100 woorden", "150 woorden"],
+    answer: 1,
+    explain: "Houd 50 woorden aan als richtlijn. De intro geeft direct antwoord op de vraag in de titel, of vertelt wat de bezoeker op de pagina kan verwachten."
+  },
+  {
+    tag: "B1",
+    q: "Maximaal aantal woorden per zin volgens onze B1-richtlijn?",
+    type: "mc",
+    options: ["8", "12 tot 15", "20", "30"],
+    answer: 1,
+    explain: "Houd 12 tot 15 woorden per zin aan. Wissel korte en lange zinnen af; schrijf actief en concreet."
+  },
+  {
+    tag: "Alinea",
+    q: "Een alinea is volgens de schrijfwijzer maximaal hoeveel woorden?",
+    type: "mc",
+    options: ["40", "80", "120", "200"],
+    answer: 1,
+    explain: "Maximaal 80 woorden per alinea, en 1 onderwerp per alinea."
+  },
+  {
+    tag: "Bullets",
+    q: "Je wilt een opsomming van 4 items plaatsen. Wat doe je?",
+    type: "mc",
+    options: [
+      "Typ streepjes (-) voor elk item",
+      "Gebruik de bullets-knop in het CMS",
+      "Maak een tabel met 1 kolom",
+      "Schrijf de items achter elkaar met puntkomma's"
+    ],
+    answer: 1,
+    explain: "Gebruik altijd de bullets van het CMS. Zo herkent voorleessoftware het als opsomming en blijft de huisstijl consistent. We gebruiken nooit puntkomma's in opsommingen."
+  },
+  {
+    tag: "Linktekst",
+    q: "Welke linktekst is betekenisvol (volgens de schrijfwijzer)?",
+    type: "mc",
+    options: [
+      "Daarvoor heeft u het S1-formulier nodig. U kunt dit <u>online downloaden</u>.",
+      "<u>Download het S1-formulier</u>.",
+      "<u>Klik hier</u> om verder te lezen.",
+      "<u>Lees meer</u>."
+    ],
+    answer: 1,
+    explain: "Een betekenisvolle link maakt duidelijk waar je naartoe gaat. 'Klik hier' en 'Lees meer' zijn taboe — slecht voor toegankelijkheid en SEO."
+  },
+  {
+    tag: "Externe link",
+    q: "Je linkt naar de website van de RDW. Welke variant is volgens onze richtlijnen?",
+    type: "mc",
+    options: [
+      "Lees meer op <u>deze link</u>.",
+      "Lees meer over het aanvragen van een rijbewijs op <u>de website van de RDW</u>.",
+      "<u>RDW</u>",
+      "<u>https://www.rdw.nl</u>"
+    ],
+    answer: 1,
+    explain: "Maak bij externe links duidelijk naar welke organisatie de link leidt. Plaatse rauwe URL's of vage links zoals 'deze link' zijn niet toegestaan."
+  },
+  {
+    tag: "Afbeelding",
+    q: "Je voegt een afbeelding toe in Bloomreach. Wat moet je doen?",
+    type: "multi",
+    options: [
+      "Een alt-tekst toevoegen die beschrijft welke informatie het beeld weergeeft",
+      "De afbeelding eerst verkleinen (bv. met tiny.png) en max. 830 px breed maken",
+      "De informatie uit de afbeelding ook in de gewone tekst opnemen",
+      "Een tabel als afbeelding plaatsen om de opmaak vast te zetten"
+    ],
+    answer: [0,1,2],
+    explain: "Alt-tekst, verkleinen tot max. 830 px, en informatie ook in tekst zetten (toegankelijkheid). Tabellen mag je NOOIT als afbeelding plaatsen — onleesbaar voor screenreaders."
+  },
+  {
+    tag: "Vet & onderstrepen",
+    q: "Mag je tekst vet of onderstreept maken voor nadruk?",
+    type: "mc",
+    options: [
+      "Ja, vet mag, onderstrepen niet",
+      "Ja, allebei mag",
+      "Nee, allebei niet — we maken teksten niet vet en onderstrepen niet",
+      "Alleen onderstrepen mag, voor links"
+    ],
+    answer: 2,
+    explain: "Schrijfwijzer: we maken tekst niet vet en we onderstrepen niet. Onderstreping wordt visueel verward met links."
+  },
+  {
+    tag: "Taalmarkering",
+    q: "Vanaf hoeveel anderstalige woorden plaats je een taalmarkering in het CMS?",
+    type: "mc",
+    options: ["1 woord", "Altijd, vanaf elk woord", "Vanaf 4 woorden", "Vanaf 10 woorden"],
+    answer: 2,
+    explain: "Vanaf 4 woorden plaats je een taalmarkering (4 of meer). Bij 3 of minder geen taalmarkering — wel cursief. Uitzondering: in tabellen altijd taalmarkering."
+  },
+  {
+    tag: "Accordeon",
+    q: "Welke uitspraak over de accordeon (uitklapper) klopt?",
+    type: "mc",
+    options: [
+      "Verberg er zo veel mogelijk content mee, dat oogt rustiger",
+      "Geef uitklappers vage titels, dat maakt nieuwsgierig",
+      "Geef uitklappers duidelijke titels waaruit blijkt wat eronder staat",
+      "Plaats nooit links in een accordeon"
+    ],
+    answer: 2,
+    explain: "Geef uitklappers duidelijke titels, anders ziet de lezer content over het hoofd. Op startpagina's gebruiken we accordeons onder OPZOEKEN; op andere pagina's weeg je het per geval af."
+  },
+  {
+    tag: "E-mailadres",
+    q: "Hoe vermeld je een e-mailadres in een tekst?",
+    type: "mc",
+    options: [
+      "Verborgen onder een 'Stuur een e-mail'-link",
+      "Voluit uitgeschreven, bv. <code>alg@minbuza.nl</code>",
+      "Als afbeelding (tegen spam)",
+      "Alleen als QR-code"
+    ],
+    answer: 1,
+    explain: "Schrijf het e-mailadres voluit. Anders weet de bezoeker niet waar de link heen gaat, en kan onverwacht een mailprogramma openen. Gebruik altijd een algemeen e-mailadres, geen persoonlijk."
+  },
+  {
+    tag: "PDF",
+    q: "Mag je een PDF op de site plaatsen?",
+    type: "mc",
+    options: [
+      "Ja, altijd — PDF is professioneel",
+      "Liever niet; alleen als het écht niet als webpagina kan, en dan voldoen aan toegankelijkheidseisen",
+      "Alleen op de startpagina",
+      "Nee, nooit onder geen enkele voorwaarde"
+    ],
+    answer: 1,
+    explain: "PDF's plaatsen we liever niet. Als het echt nodig is: gebruik de bijlage 'Toegankelijke pdf's maken met Word' en vermeld achter de link het bestandstype en de grootte, bv. (PDF, 2 MB)."
+  },
+  {
+    tag: "Tussenkop",
+    q: "Welke regel klopt voor (tussen)koppen?",
+    type: "multi",
+    options: [
+      "Maximaal 4 tot 5 woorden",
+      "Geen lidwoorden aan het begin",
+      "Geen leestekens (behalve bij een vraag)",
+      "Eindigen altijd met een uitroepteken"
+    ],
+    answer: [0,1,2],
+    explain: "Tussenkop: max 4-5 woorden, geen lidwoord aan het begin, geen leestekens (behalve bij vraagvorm). Een uitroepteken hoort nooit thuis in een tussenkop."
+  }
+];
+
+/* ============================================================
+   QUIZ ENGINE
+   ============================================================ */
+const NUM_QUESTIONS = 20;
+let state = { questions: [], i: 0, score: 0, results: [] };
+
+function shuffle(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function startQuiz() {
+  document.getElementById('startScreen').classList.add('hidden');
+  document.getElementById('endScreen').classList.add('hidden');
+  state.questions = shuffle(POOL).slice(0, NUM_QUESTIONS);
+  state.i = 0; state.score = 0; state.results = [];
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const card = document.getElementById('quizCard');
+  const q = state.questions[state.i];
+  const isMulti = q.type === 'multi';
+  document.getElementById('topScore').textContent = `Vraag ${state.i + 1} / ${state.questions.length}`;
+  document.getElementById('progressText').textContent = `${state.i} / ${state.questions.length}`;
+  document.getElementById('progressBar').style.width = `${(state.i / state.questions.length) * 100}%`;
+
+  const letters = ['A','B','C','D','E','F'];
+  card.innerHTML = `
+    <div class="q-header">
+      <span class="q-num">Vraag ${state.i + 1} van ${state.questions.length}</span>
+      <span class="q-tag">${q.tag}</span>
+      ${isMulti ? '<span class="q-tag" style="background:#e7f0ff;border-color:#b8d4ff;color:#1e4faf">Meerdere antwoorden</span>' : ''}
+    </div>
+    <h2>${q.q}</h2>
+    ${q.context ? `<div class="q-context">${q.context}</div>` : ''}
+    <div class="options" id="options">
+      ${q.options.map((opt, idx) => `
+        <div class="option" data-idx="${idx}" onclick="toggleOption(${idx}, ${isMulti})">
+          <div class="opt-letter">${letters[idx]}</div>
+          <div class="opt-text">${opt}</div>
+        </div>
+      `).join('')}
+    </div>
+    <div class="feedback" id="feedback"></div>
+    <div class="q-actions">
+      <span style="font-size:12px;color:var(--br-muted)">Score: <strong id="liveScore">${state.score}</strong> / ${state.questions.length}</span>
+      <div>
+        <button class="btn" id="checkBtn" onclick="checkAnswer()" disabled>Controleer antwoord</button>
+        <button class="btn primary hidden" id="nextBtn" onclick="nextQuestion()">Volgende →</button>
+      </div>
+    </div>
+  `;
+  card._selected = new Set();
+  card._answered = false;
+}
+
+function toggleOption(idx, isMulti) {
+  const card = document.getElementById('quizCard');
+  if (card._answered) return;
+  const sel = card._selected;
+  if (isMulti) {
+    if (sel.has(idx)) sel.delete(idx); else sel.add(idx);
+  } else {
+    sel.clear(); sel.add(idx);
+  }
+  Array.from(document.querySelectorAll('.option')).forEach(el => {
+    const i = +el.dataset.idx;
+    el.classList.toggle('selected', sel.has(i));
+  });
+  document.getElementById('checkBtn').disabled = sel.size === 0;
+}
+
+function checkAnswer() {
+  const card = document.getElementById('quizCard');
+  if (card._answered) return;
+  card._answered = true;
+  const q = state.questions[state.i];
+  const sel = card._selected;
+  const correctSet = new Set(q.type === 'multi' ? q.answer : [q.answer]);
+
+  let allCorrect = sel.size === correctSet.size && [...sel].every(x => correctSet.has(x));
+
+  Array.from(document.querySelectorAll('.option')).forEach(el => {
+    const i = +el.dataset.idx;
+    el.classList.remove('selected');
+    if (correctSet.has(i)) el.classList.add('correct');
+    else if (sel.has(i)) el.classList.add('wrong');
+    el.onclick = null;
+  });
+
+  const fb = document.getElementById('feedback');
+  fb.classList.add('show', allCorrect ? 'ok' : 'no');
+  fb.innerHTML = `<strong>${allCorrect ? '✓ Goed!' : '✗ Niet helemaal.'}</strong>${q.explain}`;
+
+  if (allCorrect) state.score++;
+  state.results.push({ q: q.q, ok: allCorrect, explain: q.explain });
+  document.getElementById('liveScore').textContent = state.score;
+
+  document.getElementById('checkBtn').classList.add('hidden');
+  document.getElementById('nextBtn').classList.remove('hidden');
+  document.getElementById('nextBtn').textContent = state.i + 1 === state.questions.length ? 'Bekijk resultaat →' : 'Volgende →';
+}
+
+function nextQuestion() {
+  state.i++;
+  if (state.i >= state.questions.length) {
+    showEnd();
+  } else {
+    renderQuestion();
+  }
+}
+
+function showEnd() {
+  document.getElementById('progressBar').style.width = '100%';
+  document.getElementById('progressText').textContent = `${state.questions.length} / ${state.questions.length}`;
+  document.getElementById('quizCard').innerHTML = '';
+  const total = state.questions.length;
+  const pct = Math.round((state.score / total) * 100);
+  document.getElementById('scoreNum').textContent = state.score;
+  document.getElementById('scoreTotal').textContent = total;
+  document.getElementById('scorePct').textContent = pct + '%';
+
+  let verdict;
+  if (pct >= 90) verdict = '🏆 Topredacteur! Je kent Bloomreach én de schrijfwijzer op je duimpje.';
+  else if (pct >= 70) verdict = '👍 Goed bezig. Nog wat finetunen op de details en je bent er.';
+  else if (pct >= 50) verdict = '📚 Een redelijke basis — neem de schrijfwijzer er nog even bij.';
+  else verdict = '⚠️ Tijd om de schrijfwijzer goed door te lezen en met Bloomreach te oefenen.';
+  document.getElementById('verdict').textContent = verdict;
+
+  document.getElementById('review').innerHTML = state.results.map((r, i) => `
+    <div class="r-item ${r.ok ? 'ok' : 'no'}">
+      <div class="r-q"><span class="r-mark">${r.ok ? '✓' : '✗'}</span> ${i + 1}. ${r.q}</div>
+      <div style="color:#555">${r.explain}</div>
+    </div>
+  `).join('');
+
+  document.getElementById('endScreen').classList.remove('hidden');
+}
+</script>
+
+</body>
+</html>
