@@ -3,828 +3,540 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CMS Quiz — Nederlandwereldwijd.nl</title>
+<title>HTML Quiz voor webredacteuren</title>
 <style>
-  /* ===== Rijkshuisstijl-achtige basis ===== */
   :root {
-    --nww-blue: #154273;       /* Rijksoverheid donkerblauw */
-    --nww-blue-light: #01689b; /* link blauw */
-    --nww-blue-hover: #0e3361;
-    --nww-red: #d52b1e;
-    --nww-orange: #e17000;
-    --nww-bg: #ffffff;
-    --nww-bg-alt: #f3f3f3;
-    --nww-border: #b4b4b4;
-    --nww-border-soft: #e6e6e6;
-    --nww-text: #000000;
-    --nww-muted: #535353;
-    --nww-green: #39870c;
-    --nww-yellow: #ffb612;
-    --nww-error-bg: #fae6e5;
-    --nww-ok-bg: #e5f3e0;
-    --nww-info-bg: #eaf1f9;
+    --bg: #f7f8fa;
+    --panel: #ffffff;
+    --ink: #1a1d24;
+    --ink-soft: #5b6573;
+    --muted: #8a93a3;
+    --border: #e6e9ef;
+    --border-strong: #cfd4dd;
+    --accent: #4c5fd5;
+    --accent-hover: #3b4cc4;
+    --accent-soft: #eef0fc;
+    --ok: #1f9d55;
+    --ok-soft: #e6f6ec;
+    --err: #c8312b;
+    --err-soft: #fbe9e8;
+    --warn: #b6701d;
+    --warn-soft: #fff4e0;
+    --code-bg: #0f1115;
+    --code-ink: #e4e7ee;
+    --code-tag: #82aaff;
+    --code-attr: #ffcb6b;
+    --code-str: #c3e88d;
+    --code-comment: #6e7889;
+    --code-bad: #ff7a7a;
   }
+
   * { box-sizing: border-box; }
   html, body {
     margin: 0; padding: 0;
-    font-family: "RO Sans", "Source Sans Pro", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-    color: var(--nww-text);
-    background: var(--nww-bg);
-    line-height: 1.5;
-  }
-  a { color: var(--nww-blue-light); text-decoration: underline; }
-  a:hover { color: var(--nww-blue-hover); }
-
-  /* ===== Lint (rood/oranje golfje boven) ===== */
-  .lint {
-    height: 8px;
-    background:
-      linear-gradient(90deg, var(--nww-red) 0%, var(--nww-orange) 50%, var(--nww-red) 100%);
-  }
-
-  /* ===== Header met kroonlogo ===== */
-  .site-header {
-    border-bottom: 1px solid var(--nww-border-soft);
-    background: #fff;
-  }
-  .site-header-inner {
-    max-width: 1080px;
-    margin: 0 auto;
-    padding: 18px 24px;
-    display: flex; align-items: center; gap: 18px;
-  }
-  .logo {
-    display: flex; align-items: center; gap: 14px;
-    text-decoration: none; color: var(--nww-text);
-  }
-  .logo .crown { width: 46px; height: 56px; flex-shrink: 0; }
-  .logo .wordmark { display: flex; flex-direction: column; line-height: 1.1; }
-  .logo .wordmark .l1 { font-weight: 700; font-size: 18px; color: var(--nww-text); }
-  .logo .wordmark .l2 { font-size: 13px; color: var(--nww-muted); }
-
-  /* ===== Donkerblauwe nav-balk ===== */
-  .navbar {
-    background: var(--nww-blue);
-    color: #fff;
-  }
-  .navbar-inner {
-    max-width: 1080px; margin: 0 auto;
-    padding: 0 24px;
-    display: flex; align-items: center; gap: 4px;
-    min-height: 44px;
-  }
-  .navbar a {
-    color: #fff; text-decoration: none;
-    padding: 12px 16px; display: inline-block;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+    line-height: 1.55;
     font-size: 15px;
   }
-  .navbar a.active, .navbar a:hover {
-    background: var(--nww-blue-hover);
-  }
-  .navbar .spacer { flex: 1; }
-  .lang-switch { font-size: 14px; padding: 12px 16px; opacity: .9; }
+  code, pre, .mono, textarea, input.code-input { font-family: ui-monospace, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace; }
 
-  /* ===== Breadcrumb ===== */
-  .breadcrumb {
-    max-width: 1080px; margin: 0 auto;
-    padding: 14px 24px 0;
-    font-size: 14px;
-    color: var(--nww-muted);
-  }
-  .breadcrumb a { color: var(--nww-blue-light); }
-  .breadcrumb .sep { margin: 0 6px; color: var(--nww-muted); }
+  .shell { max-width: 860px; margin: 0 auto; padding: 32px 22px 60px; }
 
-  /* ===== Main content ===== */
-  main {
-    max-width: 1080px; margin: 0 auto;
-    padding: 18px 24px 60px;
+  /* Top bar */
+  .topbar {
+    display: flex; align-items: center; gap: 14px;
+    margin-bottom: 22px;
   }
-  h1.page-title { font-size: 32px; color: var(--nww-blue); margin: 8px 0 6px; line-height: 1.2; }
-  .intro { font-size: 17px; color: var(--nww-muted); margin: 0 0 22px; max-width: 720px; }
+  .topbar .brand {
+    display: flex; align-items: center; gap: 10px;
+    font-weight: 600; font-size: 15px;
+  }
+  .topbar .brand .badge {
+    width: 30px; height: 30px; border-radius: 8px;
+    background: var(--ink); color: #fff;
+    display: grid; place-items: center; font-family: ui-monospace, monospace;
+    font-size: 13px; font-weight: 700;
+  }
+  .topbar .progress {
+    margin-left: auto; display: flex; align-items: center; gap: 10px;
+    font-size: 13px; color: var(--ink-soft);
+  }
+  .topbar .bar { width: 180px; height: 6px; background: #e6e9ef; border-radius: 999px; overflow: hidden; }
+  .topbar .bar-fill { height: 100%; background: var(--accent); border-radius: 999px; transition: width .25s; }
 
-  /* ===== Quiz card ===== */
-  .quiz-card {
-    background: #fff;
-    border: 1px solid var(--nww-border-soft);
-    border-top: 4px solid var(--nww-blue);
-    padding: 24px 28px;
-    margin-bottom: 24px;
+  /* Card */
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px 28px 22px;
+    box-shadow: 0 1px 2px rgba(15,18,30,.04);
   }
-  .quiz-card h2 { font-size: 22px; color: var(--nww-blue); margin: 0 0 6px; }
-  .quiz-meta { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; font-size: 13px; color: var(--nww-muted); margin-bottom: 6px; }
-  .quiz-meta .tag { background: var(--nww-info-bg); color: var(--nww-blue); padding: 2px 10px; border-radius: 2px; font-weight: 600; }
-  .quiz-meta .tag.multi { background: #fff4d6; color: #7a5a00; }
-  .quiz-meta .tag.html { background: #e8e0f7; color: #4b2c8c; }
-  .quiz-meta .tag.url { background: #d6f0e6; color: #1e6e2d; }
-  .quiz-context {
-    background: var(--nww-info-bg);
-    border-left: 4px solid var(--nww-blue-light);
-    padding: 10px 14px;
-    margin: 14px 0;
-    font-size: 14px;
-    color: var(--nww-text);
-  }
-  .quiz-context code { background: #fff; padding: 1px 5px; border-radius: 2px; font-size: 13px; border: 1px solid var(--nww-border-soft); }
 
-  /* Illustratie blok */
-  .illu {
+  /* Start / End screens */
+  .start h1, .end h1 { margin: 0 0 6px; font-size: 26px; letter-spacing: -.01em; }
+  .start p, .end p { color: var(--ink-soft); margin: 6px 0; }
+  .features { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 18px 0 22px; }
+  .feature {
+    border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px;
     background: #fafbfc;
-    border: 1px solid var(--nww-border-soft);
-    padding: 14px;
-    margin: 14px 0 18px;
-    display: flex; flex-direction: column; align-items: center; gap: 8px;
   }
-  .illu svg { max-width: 100%; height: auto; }
-  .illu .caption { font-size: 12px; color: var(--nww-muted); font-style: italic; }
+  .feature .ft { font-weight: 600; font-size: 14px; }
+  .feature .fd { font-size: 13px; color: var(--ink-soft); margin-top: 2px; }
+  @media (max-width: 620px) { .features { grid-template-columns: 1fr; } }
 
-  /* ===== Opties (radio/checkbox-stijl) ===== */
-  .options { display: flex; flex-direction: column; gap: 8px; margin-top: 6px; }
+  /* Question header */
+  .q-tags { display: flex; gap: 6px; margin-bottom: 8px; flex-wrap: wrap; }
+  .tag {
+    font-size: 11px; font-weight: 600;
+    padding: 3px 9px; border-radius: 999px;
+    background: var(--accent-soft); color: var(--accent);
+    text-transform: uppercase; letter-spacing: .04em;
+  }
+  .tag.warn { background: var(--warn-soft); color: var(--warn); }
+  .tag.err  { background: var(--err-soft);  color: var(--err); }
+  .tag.ok   { background: var(--ok-soft);   color: var(--ok); }
+  .tag.muted{ background: #eef0f3; color: var(--ink-soft); }
+
+  .q-title { font-size: 19px; font-weight: 600; margin: 0 0 4px; letter-spacing: -.005em; }
+  .q-sub { color: var(--ink-soft); font-size: 14px; margin: 0 0 14px; }
+  .q-sub code { background: #eef0f3; padding: 1px 5px; border-radius: 4px; font-size: 12.5px; }
+
+  /* Code blocks */
+  pre.code {
+    background: var(--code-bg);
+    color: var(--code-ink);
+    padding: 14px 16px;
+    border-radius: 10px;
+    overflow-x: auto;
+    font-size: 13px;
+    line-height: 1.6;
+    margin: 10px 0 14px;
+  }
+  pre.code .tag-name { color: var(--code-tag); }
+  pre.code .attr { color: var(--code-attr); }
+  pre.code .str { color: var(--code-str); }
+  pre.code .bad { background: rgba(255,122,122,.18); border-bottom: 1px dashed var(--code-bad); border-radius: 2px; }
+  pre.code .comment { color: var(--code-comment); font-style: italic; }
+
+  /* Multiple choice */
+  .options { display: flex; flex-direction: column; gap: 8px; }
   .option {
     display: flex; align-items: flex-start; gap: 10px;
     padding: 12px 14px;
-    border: 1px solid var(--nww-border);
-    background: #fff;
-    cursor: pointer;
-    font-size: 15px;
-    transition: background .12s, border-color .12s;
+    border: 1px solid var(--border); border-radius: 10px;
+    background: #fff; cursor: pointer;
+    transition: .12s;
+    font-size: 14px;
   }
-  .option:hover { background: var(--nww-info-bg); border-color: var(--nww-blue-light); }
-  .option.selected { background: var(--nww-info-bg); border-color: var(--nww-blue); }
-  .option.correct { background: var(--nww-ok-bg); border-color: var(--nww-green); }
-  .option.wrong { background: var(--nww-error-bg); border-color: var(--nww-red); }
-  .option .marker {
-    width: 18px; height: 18px; border: 2px solid var(--nww-muted);
-    border-radius: 50%; flex-shrink: 0; margin-top: 2px;
+  .option:hover { border-color: var(--accent); background: #fafbff; }
+  .option.selected { border-color: var(--accent); background: var(--accent-soft); }
+  .option.correct { border-color: var(--ok); background: var(--ok-soft); }
+  .option.wrong { border-color: var(--err); background: var(--err-soft); }
+  .option .dot {
+    width: 16px; height: 16px; border-radius: 50%;
+    border: 2px solid var(--muted); flex-shrink: 0; margin-top: 3px;
     display: grid; place-items: center;
   }
-  .option.multi-q .marker { border-radius: 2px; }
-  .option.selected .marker { border-color: var(--nww-blue); background: var(--nww-blue); }
-  .option.selected .marker::after { content: ''; width: 8px; height: 8px; background: #fff; border-radius: 50%; }
-  .option.multi-q.selected .marker::after { width: 10px; height: 6px; background: transparent; border-left: 2px solid #fff; border-bottom: 2px solid #fff; transform: rotate(-45deg) translate(2px, -1px); border-radius: 0; }
-  .option.correct .marker { border-color: var(--nww-green); background: var(--nww-green); }
-  .option.wrong .marker { border-color: var(--nww-red); background: var(--nww-red); }
-  .option code { background: #f1f1f1; padding: 1px 5px; border-radius: 2px; font-size: 13px; border: 1px solid var(--nww-border-soft); }
+  .option.multi-q .dot { border-radius: 4px; }
+  .option.selected .dot { border-color: var(--accent); background: var(--accent); }
+  .option.selected .dot::after { content: ''; width: 6px; height: 6px; background: #fff; border-radius: 50%; }
+  .option.multi-q.selected .dot::after { width: 8px; height: 5px; background: transparent; border-left: 2px solid #fff; border-bottom: 2px solid #fff; transform: rotate(-45deg) translate(1px,-1px); border-radius: 0; }
+  .option.correct .dot { border-color: var(--ok); background: var(--ok); }
+  .option.wrong .dot { border-color: var(--err); background: var(--err); }
+  .option code { background: #f0f1f5; padding: 1px 5px; border-radius: 4px; font-size: 12.5px; }
 
-  /* ===== HTML editor opdracht ===== */
-  .html-task { margin-top: 10px; }
-  .html-task .label-row { display: flex; justify-content: space-between; align-items: baseline; font-size: 13px; color: var(--nww-muted); margin-bottom: 4px; }
-  .html-task textarea {
-    width: 100%;
-    min-height: 130px;
-    font-family: "SFMono-Regular", Menlo, Consolas, monospace;
+  /* Editor textareas (code-style) */
+  .editor-wrap {
+    border: 1px solid var(--border-strong);
+    border-radius: 10px;
+    overflow: hidden;
+    background: var(--code-bg);
+  }
+  .editor-head {
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 12px;
+    background: #181c24;
+    color: #9aa3b1;
+    font-size: 12px;
+    border-bottom: 1px solid #262b36;
+  }
+  .editor-head .dot-r { width: 10px; height: 10px; border-radius: 50%; background: #ff5f56; }
+  .editor-head .dot-y { width: 10px; height: 10px; border-radius: 50%; background: #ffbd2e; }
+  .editor-head .dot-g { width: 10px; height: 10px; border-radius: 50%; background: #27c93f; }
+  .editor-head .file { margin-left: 6px; }
+  textarea.code-input {
+    width: 100%; min-height: 120px;
+    border: none; outline: none;
+    padding: 14px 16px;
+    background: var(--code-bg);
+    color: var(--code-ink);
     font-size: 13px;
-    line-height: 1.5;
-    padding: 12px 14px;
-    border: 2px solid var(--nww-border);
-    background: #fff;
+    line-height: 1.65;
     resize: vertical;
-    color: #111;
   }
-  .html-task textarea:focus { outline: none; border-color: var(--nww-blue); }
-  .html-task .preview {
-    margin-top: 10px;
-    border: 1px solid var(--nww-border-soft);
-    background: #fafbfc;
-    padding: 12px 14px;
-  }
-  .html-task .preview .ph { font-size: 12px; color: var(--nww-muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: .5px; }
-  .html-task .preview .render p { margin: 4px 0; }
-  .html-task .checklist { margin-top: 12px; font-size: 13px; }
-  .html-task .checklist li { margin: 2px 0; color: var(--nww-muted); }
-  .html-task .checklist li.ok { color: var(--nww-green); }
-  .html-task .checklist li.no { color: var(--nww-red); }
-  .html-task .checklist li::before {
-    content: '○'; display: inline-block; width: 18px;
-  }
-  .html-task .checklist li.ok::before { content: '✓'; color: var(--nww-green); }
-  .html-task .checklist li.no::before { content: '✗'; color: var(--nww-red); }
 
-  /* ===== URL opdracht ===== */
-  .url-task { margin-top: 10px; }
-  .url-task .url-row {
-    display: flex; align-items: center;
-    border: 2px solid var(--nww-border);
+  /* Preview pane */
+  .preview {
+    margin-top: 10px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
     background: #fff;
+    overflow: hidden;
   }
-  .url-task .url-row:focus-within { border-color: var(--nww-blue); }
-  .url-task .url-prefix {
-    padding: 10px 12px;
-    background: var(--nww-bg-alt);
-    color: var(--nww-muted);
-    font-family: "SFMono-Regular", Menlo, Consolas, monospace;
-    font-size: 14px;
-    border-right: 1px solid var(--nww-border-soft);
+  .preview-head { padding: 8px 12px; background: #fafbfc; border-bottom: 1px solid var(--border); font-size: 12px; color: var(--ink-soft); text-transform: uppercase; letter-spacing: .04em; }
+  .preview-body { padding: 14px 16px; min-height: 30px; }
+  .preview-body h1, .preview-body h2, .preview-body h3 { margin: 6px 0; }
+  .preview-body p { margin: 6px 0; }
+  .preview-body ul { margin: 6px 0; padding-left: 20px; }
+  .preview-body a { color: var(--accent); text-decoration: underline; }
+
+  /* Inline fill-in (single input or split URL) */
+  .url-input-wrap {
+    display: flex; align-items: stretch;
+    border: 1px solid var(--border-strong); border-radius: 10px;
+    overflow: hidden; background: #fff;
+  }
+  .url-input-wrap:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+  .url-input-wrap .pfx {
+    padding: 11px 12px; background: #f3f5f9; color: var(--ink-soft);
+    font-size: 13.5px; border-right: 1px solid var(--border);
     white-space: nowrap;
   }
-  .url-task input.url-input {
-    flex: 1;
-    border: none;
-    padding: 10px 12px;
-    font-family: "SFMono-Regular", Menlo, Consolas, monospace;
-    font-size: 14px;
-    outline: none;
-    background: transparent;
+  .url-input-wrap input {
+    flex: 1; border: none; outline: none;
+    padding: 11px 12px; font-size: 14px;
+    background: transparent; color: var(--ink);
   }
-
-  /* ===== Fill-in ===== */
-  .fillin input {
-    padding: 10px 12px;
-    border: 2px solid var(--nww-border);
-    font-size: 15px;
-    width: 100%;
-    max-width: 360px;
-    background: #fff;
+  input.solo {
+    width: 100%; max-width: 460px;
+    padding: 11px 14px; border: 1px solid var(--border-strong);
+    border-radius: 10px; font-size: 14px; background: #fff; outline: none;
   }
-  .fillin input:focus { outline: none; border-color: var(--nww-blue); }
+  input.solo:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
 
-  /* ===== Feedback ===== */
+  /* Spot-the-pollution: clickable lines */
+  .spot {
+    background: var(--code-bg); color: var(--code-ink);
+    border-radius: 10px; padding: 8px 0; margin: 6px 0 14px;
+    font-size: 13px; line-height: 1.7;
+  }
+  .spot .line {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 4px 16px; cursor: pointer;
+    font-family: ui-monospace, monospace;
+    border-left: 3px solid transparent;
+  }
+  .spot .line:hover { background: rgba(255,255,255,.04); }
+  .spot .line .ln { color: var(--code-comment); width: 22px; flex-shrink: 0; user-select: none; text-align: right; }
+  .spot .line.selected { background: rgba(255,122,122,.16); border-left-color: var(--code-bad); }
+  .spot .line.correct { background: rgba(126,224,135,.18); border-left-color: var(--ok); }
+  .spot .line.missed { background: rgba(255,122,122,.10); border-left-color: var(--err); }
+  .spot .line.wrong { background: rgba(255,122,122,.18); border-left-color: var(--err); }
+  .spot .line code.cnt { background: transparent; padding: 0; }
+  .spot-help { font-size: 13px; color: var(--ink-soft); margin: 0 0 6px; }
+
+  /* Feedback */
   .feedback {
-    margin-top: 16px;
-    padding: 12px 14px;
+    margin-top: 14px;
+    padding: 14px 16px;
+    border-radius: 10px;
     border: 1px solid;
-    font-size: 14px;
     display: none;
+    font-size: 14px;
   }
   .feedback.show { display: block; }
-  .feedback.ok { background: var(--nww-ok-bg); border-color: var(--nww-green); color: #1d4d09; }
-  .feedback.no { background: var(--nww-error-bg); border-color: var(--nww-red); color: #7a1813; }
-  .feedback strong { display: block; margin-bottom: 4px; font-size: 15px; }
-  .feedback code { background: rgba(0,0,0,.07); padding: 1px 5px; border-radius: 2px; }
+  .feedback.ok { background: var(--ok-soft); border-color: #b4e1c2; color: #145a30; }
+  .feedback.no { background: var(--err-soft); border-color: #f1b8b5; color: #7e1a16; }
+  .feedback strong { display: block; margin-bottom: 4px; }
+  .feedback code { background: rgba(0,0,0,.07); padding: 1px 5px; border-radius: 4px; font-size: 12.5px; }
+  .check-list { list-style: none; padding: 0; margin: 8px 0 0; font-size: 13.5px; }
+  .check-list li { padding: 2px 0 2px 22px; position: relative; }
+  .check-list li::before { content: '○'; color: var(--muted); position: absolute; left: 0; }
+  .check-list li.ok::before { content: '✓'; color: var(--ok); }
+  .check-list li.no::before { content: '✗'; color: var(--err); }
 
-  /* ===== Knoppen Rijkshuisstijl ===== */
+  /* Buttons */
+  .actions {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-top: 20px; gap: 12px;
+  }
   .btn {
-    background: var(--nww-blue);
-    color: #fff;
-    border: 1px solid var(--nww-blue);
-    padding: 10px 18px 10px 16px;
-    font: inherit;
-    font-size: 15px;
+    border: 1px solid var(--accent); background: var(--accent); color: #fff;
+    padding: 10px 18px; border-radius: 10px;
+    font: inherit; font-weight: 600; font-size: 14px;
     cursor: pointer;
-    position: relative;
-    display: inline-flex; align-items: center; gap: 8px;
+    display: inline-flex; align-items: center; gap: 6px;
+    transition: .12s;
   }
-  .btn:hover { background: var(--nww-blue-hover); border-color: var(--nww-blue-hover); }
-  .btn:disabled { opacity: .5; cursor: not-allowed; }
-  .btn::after {
-    content: ''; width: 0; height: 0;
-    border-left: 6px solid #fff;
-    border-top: 4px solid transparent;
-    border-bottom: 4px solid transparent;
-  }
-  .btn.secondary {
-    background: #fff; color: var(--nww-blue);
-  }
-  .btn.secondary::after { border-left-color: var(--nww-blue); }
-  .btn.secondary:hover { background: var(--nww-info-bg); }
-  .actions { display: flex; justify-content: space-between; align-items: center; margin-top: 18px; gap: 14px; flex-wrap: wrap; }
+  .btn:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+  .btn:disabled { opacity: .45; cursor: not-allowed; }
+  .btn.ghost { background: transparent; color: var(--ink); border-color: var(--border-strong); }
+  .btn.ghost:hover { background: #f3f5f9; }
 
-  /* ===== Voortgang ===== */
-  .progress {
-    display: flex; align-items: center; gap: 12px;
-    font-size: 14px; color: var(--nww-muted);
-    margin-bottom: 14px;
-  }
-  .progress-bar { flex: 1; height: 6px; background: #e6e6e6; max-width: 320px; }
-  .progress-bar-fill { height: 100%; background: var(--nww-blue); transition: width .25s; }
+  .actions .live-score { font-size: 13px; color: var(--ink-soft); }
 
-  /* ===== Eindscherm ===== */
-  .score-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin: 18px 0; }
-  .score-box {
-    border: 1px solid var(--nww-border-soft);
+  /* End screen */
+  .score-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 16px 0; }
+  .score-row .box {
+    border: 1px solid var(--border); border-radius: 10px;
     padding: 16px; text-align: center;
   }
-  .score-box .num { font-size: 30px; font-weight: 700; color: var(--nww-blue); }
-  .score-box .lbl { font-size: 12px; color: var(--nww-muted); text-transform: uppercase; letter-spacing: .5px; }
-  .review { margin-top: 16px; border-top: 1px solid var(--nww-border-soft); padding-top: 10px; }
-  .review .r-item { padding: 10px 0; border-bottom: 1px solid var(--nww-border-soft); font-size: 14px; }
-  .review .r-item .r-q { font-weight: 600; }
-  .review .r-item.ok .r-mark { color: var(--nww-green); margin-right: 6px; }
-  .review .r-item.no .r-mark { color: var(--nww-red); margin-right: 6px; }
+  .score-row .num { font-size: 30px; font-weight: 700; color: var(--ink); }
+  .score-row .lbl { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; margin-top: 2px; }
+  .verdict { font-size: 15px; padding: 10px 0; }
+  .review { border-top: 1px solid var(--border); padding-top: 6px; margin-top: 10px; max-height: 320px; overflow: auto; }
+  .review .item { padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 13.5px; }
+  .review .item .q { font-weight: 600; }
+  .review .item.ok .m { color: var(--ok); }
+  .review .item.no .m { color: var(--err); }
+  .review .item .m { margin-right: 6px; }
 
   .hidden { display: none !important; }
-
-  /* ===== Footer ===== */
-  footer {
-    background: var(--nww-blue);
-    color: #fff;
-    padding: 24px;
-    margin-top: 40px;
-  }
-  footer .footer-inner {
-    max-width: 1080px; margin: 0 auto;
-    display: flex; justify-content: space-between; gap: 24px; flex-wrap: wrap;
-    font-size: 14px;
-  }
-  footer a { color: #fff; }
-
-  /* Code in tekst */
-  code.inline { background: #f1f1f1; padding: 1px 5px; border-radius: 2px; font-size: 13px; border: 1px solid var(--nww-border-soft); }
-
-  @media (max-width: 720px) {
-    .score-grid { grid-template-columns: 1fr; }
-    .navbar-inner { overflow-x: auto; }
-  }
 </style>
 </head>
 <body>
 
-<div class="lint"></div>
+<div class="shell">
 
-<header class="site-header">
-  <div class="site-header-inner">
-    <a class="logo" href="#">
-      <!-- Rijksoverheid-achtig kroontje (versimpeld) -->
-      <svg class="crown" viewBox="0 0 60 72" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <rect x="0" y="0" width="60" height="72" fill="#fff"/>
-        <g fill="#154273">
-          <!-- Drie kruisjes bovenop -->
-          <rect x="6" y="2" width="3" height="8"/><rect x="3" y="4.5" width="9" height="3"/>
-          <rect x="28.5" y="0" width="3" height="10"/><rect x="25.5" y="3" width="9" height="3"/>
-          <rect x="51" y="2" width="3" height="8"/><rect x="48" y="4.5" width="9" height="3"/>
-          <!-- Kroonband -->
-          <path d="M2 14 L8 28 L18 18 L30 30 L42 18 L52 28 L58 14 L58 36 L2 36 Z"/>
-          <!-- Schild eronder -->
-          <path d="M8 38 L52 38 L52 56 Q30 72 8 56 Z"/>
-        </g>
-        <g fill="#ffb612">
-          <!-- Leeuw-stip in het schild (versimpeld) -->
-          <circle cx="30" cy="50" r="6"/>
-        </g>
-      </svg>
-      <span class="wordmark">
-        <span class="l1">Nederlandwereldwijd.nl</span>
-        <span class="l2">Voor Nederlanders in het buitenland</span>
-      </span>
-    </a>
+  <div class="topbar">
+    <div class="brand"><span class="badge">&lt;/&gt;</span> HTML Quiz voor webredacteuren</div>
+    <div class="progress" id="prog">
+      <span id="progText">Klaar om te starten</span>
+      <div class="bar"><div class="bar-fill" id="progBar"></div></div>
+    </div>
   </div>
-</header>
-
-<nav class="navbar">
-  <div class="navbar-inner">
-    <a href="#" class="active">Onderwerpen</a>
-    <a href="#">Landen</a>
-    <a href="#">Reisadviezen</a>
-    <a href="#">Ambassades en consulaten</a>
-    <a href="#">Contact</a>
-    <span class="spacer"></span>
-    <span class="lang-switch">NL | EN</span>
-  </div>
-</nav>
-
-<div class="breadcrumb">
-  <a href="#">Home</a><span class="sep">›</span>
-  <a href="#">Voor redacteuren</a><span class="sep">›</span>
-  CMS Quiz
-</div>
-
-<main>
-  <h1 class="page-title">CMS Quiz voor redacteuren</h1>
-  <p class="intro">Test je kennis van het CMS en de schrijfwijzer van Nederlandwereldwijd.nl. 20 willekeurige vragen — multiple choice, URL-opbouw en échte HTML-opschoonopdrachten.</p>
 
   <!-- START -->
-  <div class="quiz-card" id="startScreen">
-    <h2>Klaar om te beginnen?</h2>
-    <p>De quiz bevat 20 willekeurig getrokken vragen uit een grotere pool. Je krijgt na elke vraag uitleg. Onderwerpen:</p>
-    <ul>
-      <li>Pagina's aanmaken in de juiste map</li>
-      <li>Tekst en URL's opbouwen</li>
-      <li>Heading-structuur (H1, H2, H3)</li>
-      <li>HTML opschonen: Word-vervuiling, inline-styles, http → https</li>
-      <li>Velden goed invullen, metadata, accordeons, alt-tekst</li>
-    </ul>
+  <div class="card start" id="startScreen">
+    <h1>HTML-opdrachten voor redacteuren</h1>
+    <p>20 willekeurige opdrachtjes. Je schrijft, herkent en schoont HTML op. Per opdracht zie je een live preview en krijg je een checklist van wat goed of fout is.</p>
+
+    <div class="features">
+      <div class="feature"><div class="ft">Schrijven</div><div class="fd">Typ zelf de juiste HTML: een link, lijst, kop of alinea.</div></div>
+      <div class="feature"><div class="ft">Spotten</div><div class="fd">Klik in de code op de regels die vervuild zijn.</div></div>
+      <div class="feature"><div class="ft">Opschonen</div><div class="fd">Verwijder Word-troep, inline styles en onveilige links.</div></div>
+      <div class="feature"><div class="ft">Begrijpen</div><div class="fd">Korte multiple-choice over regels uit de schrijfwijzer.</div></div>
+    </div>
+
     <div class="actions">
-      <span style="font-size:13px;color:var(--nww-muted)">Gemiddelde duur: ± 10 minuten</span>
-      <button class="btn" onclick="startQuiz()">Start de quiz</button>
+      <span class="live-score">20 vragen · ± 10 minuten</span>
+      <button class="btn" onclick="startQuiz()">Start de quiz →</button>
     </div>
   </div>
 
   <!-- QUIZ -->
-  <div class="quiz-card hidden" id="quizScreen">
-    <div class="progress">
-      <span id="progressText">Vraag 1 van 20</span>
-      <div class="progress-bar"><div class="progress-bar-fill" id="progressBar"></div></div>
-      <span>Score: <strong id="liveScore">0</strong></span>
-    </div>
+  <div class="card hidden" id="quizScreen">
     <div id="quizBody"></div>
   </div>
 
-  <!-- EIND -->
-  <div class="quiz-card hidden" id="endScreen">
-    <h2>Resultaat</h2>
-    <div class="score-grid">
-      <div class="score-box"><div class="num" id="scoreNum">0</div><div class="lbl">Goed</div></div>
-      <div class="score-box"><div class="num" id="scoreTotal">20</div><div class="lbl">Totaal</div></div>
-      <div class="score-box"><div class="num" id="scorePct">0%</div><div class="lbl">Score</div></div>
+  <!-- END -->
+  <div class="card hidden end" id="endScreen">
+    <h1>Resultaat</h1>
+    <div class="score-row">
+      <div class="box"><div class="num" id="scoreNum">0</div><div class="lbl">Goed</div></div>
+      <div class="box"><div class="num" id="scoreTotal">20</div><div class="lbl">Totaal</div></div>
+      <div class="box"><div class="num" id="scorePct">0%</div><div class="lbl">Score</div></div>
     </div>
-    <p id="verdict" style="font-size: 16px;"></p>
+    <p class="verdict" id="verdict"></p>
     <div class="review" id="review"></div>
     <div class="actions">
-      <button class="btn secondary" onclick="location.reload()">Sluiten</button>
+      <button class="btn ghost" onclick="location.reload()">Sluiten</button>
       <button class="btn" onclick="startQuiz()">Opnieuw met 20 nieuwe vragen</button>
     </div>
   </div>
-</main>
 
-<footer>
-  <div class="footer-inner">
-    <div>
-      <strong>Nederlandwereldwijd.nl</strong><br>
-      Een initiatief van het Ministerie van Buitenlandse Zaken
-    </div>
-    <div>
-      <a href="#">Contact</a> &nbsp;·&nbsp;
-      <a href="#">Toegankelijkheid</a> &nbsp;·&nbsp;
-      <a href="#">Cookieverklaring</a>
-    </div>
-  </div>
-</footer>
+</div>
 
 <script>
-/* ===================== ILLUSTRATIES (SVG) ===================== */
-const ILLU = {
-  folderTree: `
-    <svg viewBox="0 0 520 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Documentenstructuur in het CMS">
-      <style>
-        .f { fill: #ffb612; stroke: #c98e00; stroke-width: 1; }
-        .d { fill: #fff; stroke: #b4b4b4; }
-        .t { font: 14px "RO Sans", sans-serif; fill: #154273; }
-        .m { font: 13px monospace; fill: #535353; }
-        .hl { fill: #eaf1f9; stroke: #01689b; stroke-width: 1.5; }
-        .conn { stroke: #b4b4b4; fill: none; }
-      </style>
-      <text x="10" y="18" class="t" font-weight="700">Documentenstructuur</text>
-      <!-- root -->
-      <g transform="translate(20,40)">
-        <rect class="f" x="0" y="0" width="22" height="16" rx="2"/>
-        <text x="32" y="13" class="t">NederlandWereldwijd</text>
-      </g>
-      <path class="conn" d="M31 60 V 80"/>
-      <g transform="translate(40,80)">
-        <rect class="f" x="0" y="0" width="22" height="16" rx="2"/>
-        <text x="32" y="13" class="t">Pagina's</text>
-      </g>
-      <path class="conn" d="M51 100 V 120"/>
-      <g transform="translate(60,120)">
-        <rect class="f" x="0" y="0" width="22" height="16" rx="2"/>
-        <text x="32" y="13" class="t">Onderwerpen</text>
-      </g>
-      <path class="conn" d="M71 140 V 165 H 90"/>
-      <g transform="translate(90,158)">
-        <rect class="hl" x="-4" y="-4" width="200" height="22" rx="2"/>
-        <rect class="d" x="0" y="0" width="14" height="16"/>
-        <text x="22" y="13" class="t" font-weight="700">Pensioen uit Nederland</text>
-      </g>
-      <path class="conn" d="M71 140 V 192 H 90"/>
-      <g transform="translate(90,184)">
-        <rect class="d" x="0" y="0" width="14" height="16"/>
-        <text x="22" y="13" class="m">Belastingaangifte</text>
-      </g>
-      <!-- pijl rechts -->
-      <g transform="translate(310,140)">
-        <text x="0" y="0" class="t" font-weight="700">Hier hoort de nieuwe pagina</text>
-        <path d="M -20 5 L -5 5 L -5 10 L 5 0 L -5 -10 L -5 -5 L -20 -5 Z" fill="#01689b"/>
-      </g>
-    </svg>`,
+/* ========= Helpers ========= */
+const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const norm = s => s.replace(/\s+/g, ' ').trim();
+const shuffle = a => { const x = a.slice(); for (let i = x.length-1; i>0; i--){ const j = Math.floor(Math.random()*(i+1)); [x[i],x[j]]=[x[j],x[i]]; } return x; };
 
-  headingStructure: `
-    <svg viewBox="0 0 520 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Heading-structuur H1 H2 H3">
-      <style>
-        .h1 { font: 700 22px "RO Sans", sans-serif; fill: #154273; }
-        .h2 { font: 700 17px "RO Sans", sans-serif; fill: #154273; }
-        .h3 { font: 700 14px "RO Sans", sans-serif; fill: #154273; }
-        .p  { font: 13px "RO Sans", sans-serif; fill: #535353; }
-        .badge { fill: #fff; stroke: #154273; stroke-width: 1.5; }
-        .bt { font: 700 11px "RO Sans", sans-serif; fill: #154273; }
-        .line { stroke: #d8dade; }
-      </style>
-      <rect x="10" y="10" width="500" height="200" fill="#fff" stroke="#e6e6e6"/>
-      <rect x="10" y="28" width="50" height="18" class="badge"/>
-      <text x="22" y="42" class="bt">H1</text>
-      <text x="72" y="44" class="h1">Belastingaangifte vanuit Thailand</text>
-
-      <line x1="10" y1="62" x2="510" y2="62" class="line"/>
-
-      <rect x="30" y="76" width="50" height="18" class="badge"/>
-      <text x="42" y="90" class="bt">H2</text>
-      <text x="92" y="92" class="h2">Hoe doe ik aangifte?</text>
-      <text x="92" y="110" class="p">Stappenplan voor de aangifte vanuit Thailand…</text>
-
-      <rect x="50" y="128" width="50" height="18" class="badge"/>
-      <text x="62" y="142" class="bt">H3</text>
-      <text x="112" y="144" class="h3">Welke formulieren heb ik nodig?</text>
-
-      <rect x="30" y="166" width="50" height="18" class="badge"/>
-      <text x="42" y="180" class="bt">H2</text>
-      <text x="92" y="182" class="h2">Inkomensverklaring</text>
-      <text x="92" y="200" class="p">Hoe vraagt u een inkomensverklaring aan…</text>
-    </svg>`,
-
-  urlAnatomy: `
-    <svg viewBox="0 0 520 160" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Anatomie van een goede URL">
-      <style>
-        .url { font: 16px monospace; fill: #154273; }
-        .bad { font: 16px monospace; fill: #a8211a; text-decoration: line-through; }
-        .lbl { font: 12px "RO Sans", sans-serif; fill: #535353; }
-        .ok-badge { fill: #e5f3e0; stroke: #39870c; }
-        .no-badge { fill: #fae6e5; stroke: #d52b1e; }
-      </style>
-      <rect x="10" y="20" width="500" height="44" class="no-badge"/>
-      <text x="22" y="48" class="bad">https://nederlandwereldwijd.nl/Onderwerpen/De_Belastingaangifte/</text>
-      <text x="22" y="60" class="lbl">✗ Hoofdletters, underscores, lidwoord</text>
-
-      <rect x="10" y="80" width="500" height="44" class="ok-badge"/>
-      <text x="22" y="108" class="url">https://nederlandwereldwijd.nl/onderwerpen/belastingaangifte-thailand</text>
-      <text x="22" y="120" class="lbl">✓ Klein, leesbaar, met keywords, geen lidwoord</text>
-    </svg>`,
-
-  https: `
-    <svg viewBox="0 0 520 110" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="HTTPS vs HTTP">
-      <style>
-        .lbl { font: 13px "RO Sans", sans-serif; fill: #535353; }
-        .url { font: 14px monospace; fill: #154273; }
-        .bad { font: 14px monospace; fill: #a8211a; }
-      </style>
-      <rect x="10" y="10" width="500" height="40" fill="#fae6e5" stroke="#d52b1e"/>
-      <g transform="translate(20,18)">
-        <rect width="22" height="22" fill="#fff" stroke="#a8211a"/>
-        <text x="6" y="16" font-size="14" fill="#a8211a">!</text>
-      </g>
-      <text x="56" y="35" class="bad">http://www.rdw.nl/rijbewijs</text>
-      <text x="270" y="35" class="lbl">Niet veilig — browsers waarschuwen</text>
-
-      <rect x="10" y="60" width="500" height="40" fill="#e5f3e0" stroke="#39870c"/>
-      <g transform="translate(20,68)">
-        <rect width="14" height="10" x="4" y="8" fill="#39870c"/>
-        <path d="M7 8 V 5 a5 5 0 0 1 10 0 V 8" stroke="#39870c" stroke-width="2" fill="none"/>
-      </g>
-      <text x="56" y="85" class="url">https://www.rdw.nl/rijbewijs</text>
-      <text x="270" y="85" class="lbl">Versleuteld — verplicht voor de overheid</text>
-    </svg>`,
-
-  htmlPaste: `
-    <svg viewBox="0 0 520 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Plakken uit Word geeft HTML-vervuiling">
-      <style>
-        .ttl { font: 700 13px "RO Sans", sans-serif; fill: #154273; }
-        .code { font: 11px monospace; fill: #535353; }
-        .bad { fill: #fae6e5; stroke: #d52b1e; }
-        .ok  { fill: #e5f3e0; stroke: #39870c; }
-      </style>
-      <rect x="10" y="10" width="240" height="180" class="bad"/>
-      <text x="22" y="30" class="ttl">✗ Geplakt uit Word</text>
-      <text x="22" y="56" class="code">&lt;p class="MsoNormal"&gt;</text>
-      <text x="22" y="72" class="code">&lt;span style="font-family:</text>
-      <text x="22" y="88" class="code">  Calibri;mso-fareast-lang:NL"&gt;</text>
-      <text x="22" y="104" class="code">Lees meer over</text>
-      <text x="22" y="120" class="code">&lt;a href="http://svb.nl"&gt;de SVB&lt;/a&gt;.</text>
-      <text x="22" y="136" class="code">&lt;o:p&gt;&lt;/o:p&gt;</text>
-      <text x="22" y="152" class="code">&lt;/span&gt;&lt;/p&gt;</text>
-
-      <path d="M260 100 L290 100 L290 95 L300 105 L290 115 L290 110 L260 110 Z" fill="#01689b"/>
-
-      <rect x="310" y="10" width="200" height="180" class="ok"/>
-      <text x="322" y="30" class="ttl">✓ Schoon</text>
-      <text x="322" y="60" class="code">&lt;p&gt;</text>
-      <text x="322" y="76" class="code">Lees meer over</text>
-      <text x="322" y="92" class="code">&lt;a href="https://svb.nl"&gt;</text>
-      <text x="322" y="108" class="code">de SVB&lt;/a&gt;.</text>
-      <text x="322" y="124" class="code">&lt;/p&gt;</text>
-    </svg>`,
-
-  fields: `
-    <svg viewBox="0 0 520 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Verplichte velden">
-      <style>
-        .lbl { font: 12px "RO Sans", sans-serif; fill: #535353; }
-        .lbl b { fill: #d52b1e; }
-        .box { fill: #fff; stroke: #b4b4b4; }
-        .full { fill: #fff; stroke: #39870c; stroke-width: 2; }
-        .empty { fill: #fae6e5; stroke: #d52b1e; stroke-width: 2; }
-        .v { font: 13px "RO Sans", sans-serif; fill: #154273; }
-        .ph { font: 13px italic "RO Sans", sans-serif; fill: #a8211a; }
-      </style>
-      <text x="10" y="16" class="lbl">Title <tspan fill="#d52b1e">*</tspan></text>
-      <rect x="10" y="22" width="320" height="28" class="full"/>
-      <text x="20" y="40" class="v">Belastingaangifte doen in Thailand</text>
-
-      <text x="10" y="68" class="lbl">Introduction <tspan fill="#d52b1e">*</tspan></text>
-      <rect x="10" y="74" width="320" height="28" class="full"/>
-      <text x="20" y="92" class="v">Bent u Nederlander en doet u…</text>
-
-      <text x="10" y="120" class="lbl">Metadescription <tspan fill="#d52b1e">*</tspan></text>
-      <rect x="10" y="126" width="320" height="28" class="empty"/>
-      <text x="20" y="144" class="ph">— niet ingevuld —</text>
-
-      <text x="10" y="172" class="lbl">Topics (Onderwerpen) <tspan fill="#d52b1e">*</tspan></text>
-      <rect x="10" y="178" width="320" height="18" class="full"/>
-      <text x="20" y="192" class="v">belastingaangifte</text>
-
-      <g transform="translate(360,80)">
-        <rect width="150" height="80" fill="#fff9d6" stroke="#e3b400"/>
-        <text x="10" y="20" class="lbl" font-weight="700">Let op</text>
-        <text x="10" y="40" class="lbl">Google verzint zelf</text>
-        <text x="10" y="56" class="lbl">een omschrijving als</text>
-        <text x="10" y="72" class="lbl">deze leeg is.</text>
-      </g>
-    </svg>`,
-};
-
-/* ===================== VRAGEN POOL ===================== */
+/* ========= Vragenpool =========
+   Types:
+     'write'  – schrijf zelf HTML in een editor; check via forbidden/required regex
+     'clean'  – schoon HTML op (start-HTML is vervuild)
+     'spot'   – klik op de regels die vervuild/fout zijn
+     'mc'     – multiple choice (1 antwoord)
+     'multi'  – meerdere goed
+     'url'    – URL-slug invoeren met prefix
+     'fillin' – tekst invullen (1 input)
+*/
 const POOL = [
-  /* ----- Pagina aanmaken ----- */
-  {
-    tag: "Pagina aanmaken", type: "mc",
-    q: "Je wilt een nieuwe pagina maken over 'Pensioen uit Nederland' voor klanten in Thailand. Waar plaats je deze in de documentenboom?",
-    illu: "folderTree",
-    options: [
-      "Direct onder 'NederlandWereldwijd' als losse pagina",
-      "Onder Pagina's ▸ Onderwerpen ▸ in de juiste onderwerpmap",
-      "In een nieuwe rootmap die je zelf aanmaakt",
-      "Onder Thema's, want het gaat over Thailand"
-    ],
-    answer: 1,
-    explain: "Pagina's worden geordend per onderwerp in de map Pagina's ▸ Onderwerpen. Zo blijft de structuur consistent en herbruikbaar voor andere landen."
-  },
-  {
-    tag: "Pagina aanmaken", type: "mc",
-    q: "Hoe maak je in het CMS een nieuwe pagina aan binnen een map?",
-    options: [
-      "Rechtsklik op de juiste map → 'New' → kies het juiste documenttype",
-      "Sleep een bestaande pagina naar de map en hernoem hem",
-      "Maak de pagina eerst in Word en upload als .docx",
-      "Maak een kopie van een live-pagina en publiceer direct"
-    ],
-    answer: 0,
-    explain: "Rechtsklik op de map en kies 'New'. Selecteer daarna het juiste documenttype (bv. Webpagina / Informatiepagina)."
-  },
 
-  /* ----- URL ----- */
+  /* ----- SCHRIJVEN ----- */
   {
-    tag: "URL opbouwen", type: "mc",
-    q: "Welke URL voldoet aan de schrijfwijzer van Nederlandwereldwijd.nl?",
-    context: "Richtlijn: kort, leesbaar, geen hoofdletters, geen leestekens, lidwoorden weglaten, max. 100 tekens.",
-    illu: "urlAnatomy",
-    options: [
-      "/Onderwerpen/De_Belastingaangifte_Doen_In_Thailand/",
-      "/onderwerpen/belastingaangifte-thailand",
-      "/onderwerpen/belastingaangifte-doen-in-thailand!",
-      "/Onderwerpen/belastingaangifte/Thailand?id=123"
-    ],
-    answer: 1,
-    explain: "Klein, leesbaar, met keywords, zonder lidwoord, leesteken of hoofdletter."
-  },
-  {
-    tag: "URL opbouwen", type: "url",
-    q: "Maak zelf de URL voor een pagina over 'De inkomensverklaring aanvragen vanuit Spanje'.",
-    context: "Volg de richtlijnen: kleine letters, koppeltekens, geen lidwoorden, alleen de belangrijkste keywords.",
-    prefix: "https://nederlandwereldwijd.nl/onderwerpen/",
-    placeholder: "bv. inkomensverklaring-spanje",
-    example: "inkomensverklaring-spanje",
-    validate: (val) => {
-      const v = val.trim();
-      const errs = [];
-      if (v !== v.toLowerCase()) errs.push("Gebruik alleen kleine letters");
-      if (/\s/.test(v)) errs.push("Geen spaties — gebruik koppeltekens");
-      if (/[^a-z0-9-]/.test(v)) errs.push("Geen leestekens of speciale tekens");
-      if (/(^-|-$)/.test(v)) errs.push("Geen koppelteken aan begin of einde");
-      if (/^(de-|het-|een-)/.test(v)) errs.push("Laat lidwoorden weg");
-      if (!/inkomensverklaring/.test(v)) errs.push("Bevat het keyword 'inkomensverklaring' niet");
-      if (!/spanje/.test(v)) errs.push("Bevat het land 'spanje' niet");
-      if (v.length > 100) errs.push("Te lang (max. 100 tekens)");
-      if (v.length < 3) errs.push("Te kort");
-      return errs;
-    },
-    explain: "Een correcte URL is bv. <code>inkomensverklaring-spanje</code> of <code>inkomensverklaring-aanvragen-spanje</code>. Geen lidwoorden ('de-'), geen hoofdletters, geen punten of underscores."
-  },
-
-  /* ----- Headings ----- */
-  {
-    tag: "Heading-structuur", type: "mc",
-    q: "Welke heading-volgorde is correct op een webpagina?",
-    illu: "headingStructure",
-    options: [
-      "H1 → H3 → H2 → H4",
-      "H2 → H1 → H3",
-      "H1 → H2 → H3",
-      "H3 → H2 → H1"
-    ],
-    answer: 2,
-    explain: "Houd altijd de volgorde H1 → H2 → H3 aan. Eén H1 per pagina (titel), daaronder H2 voor secties, en pas H3 binnen een H2."
-  },
-  {
-    tag: "Heading-structuur", type: "multi",
-    q: "Waarom is een goede heading-structuur belangrijk?",
-    options: [
-      "Google gebruikt koppen om de pagina te indexeren (SEO)",
-      "Screenreaders gebruiken koppen om de pagina te navigeren (toegankelijkheid)",
-      "Lezers kunnen de pagina makkelijker scannen",
-      "Het maakt de pagina automatisch sneller laden"
-    ],
-    answer: [0,1,2],
-    explain: "Heading-structuur is cruciaal voor SEO, toegankelijkheid (WCAG/screenreaders) en scanbaarheid. Het beïnvloedt de laadtijd niet."
-  },
-  {
-    tag: "Heading-structuur", type: "html",
-    q: "Op deze pagina staat een H3 die eigenlijk een H2 moet zijn. Pas de heading-volgorde aan.",
-    context: "Onder de H1 mag direct een H2 komen, geen H3.",
-    initial:
-`<h1>Belastingaangifte vanuit Thailand</h1>
-<h3>Hoe doe ik aangifte?</h3>
-<p>Lees hieronder de stappen.</p>`,
+    type: "write",
+    tag: "Schrijven", tagClass: "ok",
+    q: "Schrijf een link naar https://www.svb.nl met de tekst 'Aanvraag AOW'.",
+    sub: "Tip: gebruik een <code>&lt;a&gt;</code>-tag met een <code>href</code>-attribuut. Geen extra opmaak.",
+    initial: "",
+    placeholder: "<a href=\"...\">...</a>",
     forbidden: [
-      { re: /<h3>\s*Hoe doe ik aangifte\?\s*<\/h3>/i, msg: "Nog steeds een H3 — daar hoort een H2." }
+      { re: /style\s*=/i, msg: "Geen inline style." },
+      { re: /<u>|<strong>|<b>/i, msg: "Geen extra opmaak (<u>/<strong>/<b>)." },
+      { re: /http:\/\//i, msg: "Gebruik https://, geen http://." },
+      { re: /klik hier|lees meer/i, msg: "Vermijd lege linkteksten als 'klik hier' of 'lees meer'." }
     ],
     required: [
-      { re: /<h1>\s*Belastingaangifte vanuit Thailand\s*<\/h1>/i, msg: "H1 'Belastingaangifte vanuit Thailand' ontbreekt." },
-      { re: /<h2>\s*Hoe doe ik aangifte\?\s*<\/h2>/i, msg: "Maak van 'Hoe doe ik aangifte?' een H2." },
-      { re: /<p>\s*Lees hieronder de stappen\.?\s*<\/p>/i, msg: "De alinea moet behouden blijven." }
+      { re: /^<a\s[^>]*>[^<]+<\/a>$/i, msg: "Eén <a>…</a>-tag met linktekst." },
+      { re: /href\s*=\s*"https:\/\/www\.svb\.nl"?/i, msg: "href moet https://www.svb.nl zijn." },
+      { re: />\s*Aanvraag AOW\s*</i, msg: "Linktekst moet 'Aanvraag AOW' zijn." }
     ],
-    explain: "Direct na een H1 hoort een H2. Sla nooit een niveau over."
+    explain: "Correct: <code>&lt;a href=\"https://www.svb.nl\"&gt;Aanvraag AOW&lt;/a&gt;</code>"
+  },
+  {
+    type: "write",
+    tag: "Schrijven", tagClass: "ok",
+    q: "Schrijf een H2-kop met de tekst 'Pensioen aanvragen'.",
+    sub: "Net de H2-tag, geen extra attributen.",
+    initial: "",
+    placeholder: "<h2>...</h2>",
+    forbidden: [
+      { re: /style\s*=/i, msg: "Geen style-attribuut." },
+      { re: /class\s*=/i, msg: "Geen class-attribuut." },
+      { re: /<h1|<h3|<h4/i, msg: "Het moet een H2 zijn." }
+    ],
+    required: [
+      { re: /^<h2>\s*Pensioen aanvragen\s*<\/h2>$/i, msg: "Resultaat: <h2>Pensioen aanvragen</h2>" }
+    ],
+    explain: "Een kop wordt opgemaakt door de huisstijl. Voeg geen kleur, lettertype of class toe."
+  },
+  {
+    type: "write",
+    tag: "Schrijven", tagClass: "ok",
+    q: "Schrijf een opsomming met de items: Paspoort, ID-kaart, BSN-nummer.",
+    sub: "Gebruik echte lijst-HTML, geen streepjes of <code>&lt;br&gt;</code>.",
+    initial: "",
+    placeholder: "<ul>\n  <li>...</li>\n</ul>",
+    forbidden: [
+      { re: /<br/i, msg: "Geen <br> — gebruik <li>." },
+      { re: /^-/m, msg: "Geen streepjes — gebruik <li>." },
+      { re: /<ol/i, msg: "Gebruik <ul>, niet <ol> (volgorde is hier niet belangrijk)." }
+    ],
+    required: [
+      { re: /<ul>[\s\S]*<\/ul>/i, msg: "Een <ul>…</ul> ontbreekt." },
+      { re: /<li>\s*Paspoort\s*<\/li>/i, msg: "<li>Paspoort</li> ontbreekt." },
+      { re: /<li>\s*ID-kaart\s*<\/li>/i, msg: "<li>ID-kaart</li> ontbreekt." },
+      { re: /<li>\s*BSN-nummer\s*<\/li>/i, msg: "<li>BSN-nummer</li> ontbreekt." }
+    ],
+    explain: "Correct: <code>&lt;ul&gt;&lt;li&gt;Paspoort&lt;/li&gt;&lt;li&gt;ID-kaart&lt;/li&gt;&lt;li&gt;BSN-nummer&lt;/li&gt;&lt;/ul&gt;</code>"
+  },
+  {
+    type: "write",
+    tag: "Schrijven", tagClass: "ok",
+    q: "Schrijf een alinea met de zin: 'De aanvraag duurt 6 tot 8 weken.'",
+    sub: "Gewoon platte tekst binnen één <code>&lt;p&gt;</code>.",
+    initial: "",
+    placeholder: "<p>...</p>",
+    forbidden: [
+      { re: /<strong>|<b>/i, msg: "Geen vet — we maken tekst niet vet." },
+      { re: /<u>/i, msg: "Geen onderstreping." },
+      { re: /style\s*=/i, msg: "Geen style." }
+    ],
+    required: [
+      { re: /^<p>\s*De aanvraag duurt 6 tot 8 weken\.\s*<\/p>$/i, msg: "Tekst exact binnen één <p>." }
+    ],
+    explain: "Correct: <code>&lt;p&gt;De aanvraag duurt 6 tot 8 weken.&lt;/p&gt;</code>"
+  },
+  {
+    type: "write",
+    tag: "Schrijven", tagClass: "ok",
+    q: "Schrijf een afbeelding-tag voor /img/paspoort.png met als alt-tekst 'Voorbeeld van een Nederlands paspoort'.",
+    sub: "Een <code>&lt;img&gt;</code>-tag met <code>src</code> en <code>alt</code>. Alt-tekst is verplicht voor toegankelijkheid.",
+    initial: "",
+    placeholder: "<img src=\"...\" alt=\"...\">",
+    forbidden: [
+      { re: /style\s*=/i, msg: "Geen inline style." }
+    ],
+    required: [
+      { re: /<img\b[^>]*\bsrc\s*=\s*"\/img\/paspoort\.png"/i, msg: "src moet '/img/paspoort.png' zijn." },
+      { re: /<img\b[^>]*\balt\s*=\s*"Voorbeeld van een Nederlands paspoort"/i, msg: "alt moet 'Voorbeeld van een Nederlands paspoort' zijn." }
+    ],
+    explain: "Correct: <code>&lt;img src=\"/img/paspoort.png\" alt=\"Voorbeeld van een Nederlands paspoort\"&gt;</code> — zonder alt-tekst is een afbeelding ontoegankelijk."
   },
 
-  /* ----- HTML opschonen ----- */
+  /* ----- OPSCHONEN ----- */
   {
-    tag: "HTML opschonen", type: "html",
-    q: "Een redacteur heeft tekst geplakt uit Word. Schoon de HTML op zodat alleen schone tags overblijven.",
-    context: "Verwijder Word-vervuiling: <code>class=\"MsoNormal\"</code>, <code>&lt;span style=…&gt;</code>, <code>mso-…</code>, <code>&lt;o:p&gt;</code>. Maak van <code>http://</code> ook gewoon <code>https://</code>.",
-    illu: "htmlPaste",
-    initial:
-`<p class="MsoNormal"><span style="font-family:Calibri;mso-fareast-language:NL">Lees meer over <a href="http://www.svb.nl">de SVB</a>.<o:p></o:p></span></p>`,
+    type: "clean",
+    tag: "Opschonen", tagClass: "warn",
+    q: "Een redacteur heeft tekst geplakt uit Word. Schoon de HTML helemaal op.",
+    sub: "Verwijder Word-troep: <code>MsoNormal</code>, <code>&lt;span style=…&gt;</code>, <code>mso-*</code>, <code>&lt;o:p&gt;</code>. Maak van <code>http://</code> ook <code>https://</code>.",
+    initial: `<p class="MsoNormal"><span style="font-family:Calibri;mso-fareast-language:NL">Lees meer over <a href="http://www.svb.nl">de SVB</a>.<o:p></o:p></span></p>`,
     forbidden: [
       { re: /MsoNormal/i, msg: "Verwijder class=\"MsoNormal\"." },
-      { re: /<span[^>]*>/i, msg: "Verwijder de <span>-tag." },
-      { re: /mso-/i, msg: "Verwijder de mso-* attributen." },
-      { re: /<o:p/i, msg: "Verwijder de <o:p>-tag." },
-      { re: /font-family/i, msg: "Verwijder de font-family-style." },
-      { re: /style\s*=/i, msg: "Geen inline style-attributen." },
-      { re: /http:\/\//i, msg: "Gebruik https:// in plaats van http://." }
+      { re: /<span[^>]*>/i, msg: "Verwijder de <span>." },
+      { re: /mso-/i, msg: "Verwijder mso-* attributen." },
+      { re: /<o:p/i, msg: "Verwijder <o:p>." },
+      { re: /style\s*=/i, msg: "Geen style-attribuut." },
+      { re: /http:\/\//i, msg: "Gebruik https://." }
     ],
     required: [
-      { re: /^<p>[\s\S]*<\/p>$/i, msg: "De buitenste <p>…</p> moet behouden blijven." },
-      { re: /Lees meer over/i, msg: "De tekst 'Lees meer over' moet behouden blijven." },
-      { re: /<a\s+href="https:\/\/www\.svb\.nl"\s*>\s*de SVB\s*<\/a>/i, msg: "De link <a href=\"https://www.svb.nl\">de SVB</a> moet kloppen." }
+      { re: /^<p>[\s\S]*<\/p>$/i, msg: "Behoud de buitenste <p>…</p>." },
+      { re: /<a\s+href="https:\/\/www\.svb\.nl"\s*>\s*de SVB\s*<\/a>/i, msg: "Link moet <a href=\"https://www.svb.nl\">de SVB</a> zijn." }
     ],
-    explain: "Schone variant: <code>&lt;p&gt;Lees meer over &lt;a href=\"https://www.svb.nl\"&gt;de SVB&lt;/a&gt;.&lt;/p&gt;</code>"
+    explain: "Schoon: <code>&lt;p&gt;Lees meer over &lt;a href=\"https://www.svb.nl\"&gt;de SVB&lt;/a&gt;.&lt;/p&gt;</code>"
   },
   {
-    tag: "HTML opschonen", type: "html",
-    q: "Verwijder de inline-styles uit deze heading. We gebruiken de huisstijl, geen losse opmaak.",
-    initial:
-`<h2 style="color:#ff0000; font-size:22pt; font-family:Arial">Pensioen aanvragen</h2>`,
+    type: "clean",
+    tag: "Opschonen", tagClass: "warn",
+    q: "Verwijder de inline styles uit deze H2. Opmaak komt uit de huisstijl.",
+    initial: `<h2 style="color:#ff0000; font-size:22pt; font-family:Arial">Pensioen aanvragen</h2>`,
     forbidden: [
-      { re: /style\s*=/i, msg: "Verwijder het style-attribuut volledig." },
-      { re: /color\s*:/i, msg: "Geen kleur — verwijder color." },
+      { re: /style\s*=/i, msg: "Verwijder het style-attribuut." },
+      { re: /color\s*:/i, msg: "Geen kleur." },
       { re: /font-/i, msg: "Geen font-eigenschappen." }
     ],
     required: [
-      { re: /^<h2>\s*Pensioen aanvragen\s*<\/h2>$/i, msg: "Resultaat moet exact <h2>Pensioen aanvragen</h2> zijn." }
+      { re: /^<h2>\s*Pensioen aanvragen\s*<\/h2>$/i, msg: "Resultaat: <h2>Pensioen aanvragen</h2>" }
     ],
-    explain: "Schone variant: <code>&lt;h2&gt;Pensioen aanvragen&lt;/h2&gt;</code>. Opmaak komt uit de huisstijl, niet uit inline styles."
+    explain: "Schoon: <code>&lt;h2&gt;Pensioen aanvragen&lt;/h2&gt;</code>"
   },
   {
-    tag: "HTML opschonen", type: "html",
-    q: "We onderstrepen en bold-en niet. Schoon de tekst op.",
-    context: "Volgens de schrijfwijzer maken we tekst <em>niet</em> vet en onderstrepen we niet (verwarring met links).",
-    initial:
-`<p>U heeft een <u>geldig paspoort</u> en <strong>geen visum</strong> nodig.</p>`,
+    type: "clean",
+    tag: "Opschonen", tagClass: "warn",
+    q: "We vetten en onderstrepen niet. Schoon deze alinea op.",
+    initial: `<p>U heeft een <u>geldig paspoort</u> en <strong>geen visum</strong> nodig.</p>`,
     forbidden: [
-      { re: /<u>/i, msg: "Verwijder de <u>-tag." },
-      { re: /<\/u>/i, msg: "Verwijder de </u>-tag." },
-      { re: /<strong>/i, msg: "Verwijder de <strong>-tag." },
-      { re: /<\/strong>/i, msg: "Verwijder de </strong>-tag." },
+      { re: /<u>|<\/u>/i, msg: "Verwijder <u>." },
+      { re: /<strong>|<\/strong>/i, msg: "Verwijder <strong>." },
       { re: /<b>/i, msg: "Geen <b>." }
     ],
     required: [
-      { re: /^<p>\s*U heeft een geldig paspoort en geen visum nodig\.\s*<\/p>$/i, msg: "Tekst moet behouden blijven binnen één <p>." }
+      { re: /^<p>\s*U heeft een geldig paspoort en geen visum nodig\.\s*<\/p>$/i, msg: "Tekst exact behouden binnen één <p>." }
     ],
-    explain: "Schone variant: <code>&lt;p&gt;U heeft een geldig paspoort en geen visum nodig.&lt;/p&gt;</code>"
+    explain: "Schoon: <code>&lt;p&gt;U heeft een geldig paspoort en geen visum nodig.&lt;/p&gt;</code>"
   },
   {
-    tag: "HTML opschonen", type: "html",
-    q: "Verander alle http-links in https-links en houd verder alles hetzelfde.",
-    illu: "https",
-    initial:
-`<p>Lees meer over <a href="http://www.rdw.nl/rijbewijs">het rijbewijs</a> en <a href="http://www.belastingdienst.nl">de Belastingdienst</a>.</p>`,
+    type: "clean",
+    tag: "Opschonen", tagClass: "warn",
+    q: "Verander alle http-links in https-links. Verder niets aanpassen.",
+    initial: `<p>Lees meer over <a href="http://www.rdw.nl/rijbewijs">het rijbewijs</a> en <a href="http://www.belastingdienst.nl">de Belastingdienst</a>.</p>`,
     forbidden: [
-      { re: /http:\/\//i, msg: "Er staat nog een http:// in de tekst." }
+      { re: /http:\/\//i, msg: "Er staat nog een http:// in de code." }
     ],
     required: [
-      { re: /<a\s+href="https:\/\/www\.rdw\.nl\/rijbewijs">\s*het rijbewijs\s*<\/a>/i, msg: "Eerste link moet https://www.rdw.nl/rijbewijs zijn." },
-      { re: /<a\s+href="https:\/\/www\.belastingdienst\.nl">\s*de Belastingdienst\s*<\/a>/i, msg: "Tweede link moet https://www.belastingdienst.nl zijn." }
+      { re: /<a\s+href="https:\/\/www\.rdw\.nl\/rijbewijs">\s*het rijbewijs\s*<\/a>/i, msg: "Eerste link moet https://www.rdw.nl/rijbewijs." },
+      { re: /<a\s+href="https:\/\/www\.belastingdienst\.nl">\s*de Belastingdienst\s*<\/a>/i, msg: "Tweede link moet https://www.belastingdienst.nl." }
     ],
     explain: "Alle links naar overheidssites zijn https. Browsers waarschuwen anders met 'Niet veilig'."
   },
   {
-    tag: "HTML opschonen", type: "html",
-    q: "Deze opsomming staat als losse zinnen met streepjes en <code>&lt;br&gt;</code>. Maak er een echte bullet-lijst van.",
-    context: "Gebruik <code>&lt;ul&gt;</code> en <code>&lt;li&gt;</code> zodat screenreaders het als opsomming herkennen.",
-    initial:
-`<p>- Paspoort<br>- ID-kaart<br>- BSN-nummer</p>`,
+    type: "clean",
+    tag: "Opschonen", tagClass: "warn",
+    q: "Deze 'opsomming' is gemaakt met streepjes en <code>&lt;br&gt;</code>. Maak er een echte lijst van.",
+    initial: `<p>- Paspoort<br>- ID-kaart<br>- BSN-nummer</p>`,
     forbidden: [
-      { re: /<br/i, msg: "Verwijder de <br>-tags." },
-      { re: /^\s*<p>/i, msg: "Het buitenste <p> moet weg — gebruik <ul>." },
-      { re: /-\s*Paspoort/i, msg: "Verwijder het streepje voor 'Paspoort' (de bullet komt van <li>)." }
+      { re: /<br/i, msg: "Verwijder <br>." },
+      { re: /^\s*<p>/i, msg: "Geen <p> eromheen — gebruik <ul>." },
+      { re: /-\s*Paspoort/i, msg: "Verwijder het streepje voor 'Paspoort'." }
     ],
     required: [
-      { re: /<ul>[\s\S]*<\/ul>/i, msg: "Er moet een <ul>…</ul> komen." },
+      { re: /<ul>[\s\S]*<\/ul>/i, msg: "<ul>…</ul> ontbreekt." },
       { re: /<li>\s*Paspoort\s*<\/li>/i, msg: "<li>Paspoort</li> ontbreekt." },
       { re: /<li>\s*ID-kaart\s*<\/li>/i, msg: "<li>ID-kaart</li> ontbreekt." },
       { re: /<li>\s*BSN-nummer\s*<\/li>/i, msg: "<li>BSN-nummer</li> ontbreekt." }
@@ -832,414 +544,466 @@ const POOL = [
     explain: "Schoon: <code>&lt;ul&gt;&lt;li&gt;Paspoort&lt;/li&gt;&lt;li&gt;ID-kaart&lt;/li&gt;&lt;li&gt;BSN-nummer&lt;/li&gt;&lt;/ul&gt;</code>"
   },
   {
-    tag: "HTML opschonen", type: "html",
-    q: "Maak van deze vage link 'klik hier' een betekenisvolle link.",
-    context: "Een goede linktekst maakt duidelijk waar je naartoe gaat. 'Klik hier' mag niet.",
-    initial:
-`<p>Het S1-formulier heeft u nodig voor zorg in het buitenland. <a href="https://www.cak.nl/s1">Klik hier</a>.</p>`,
+    type: "clean",
+    tag: "Opschonen", tagClass: "warn",
+    q: "Maak van deze vage 'klik hier'-link een betekenisvolle link.",
+    sub: "De linktekst moet duidelijk maken waar je heen gaat.",
+    initial: `<p>Het S1-formulier heeft u nodig voor zorg in het buitenland. <a href="https://www.cak.nl/s1">Klik hier</a>.</p>`,
     forbidden: [
-      { re: />\s*Klik hier\s*</i, msg: "De linktekst 'Klik hier' moet weg." },
+      { re: />\s*Klik hier\s*</i, msg: "Verwijder de linktekst 'Klik hier'." },
       { re: />\s*Lees meer\s*</i, msg: "Ook 'Lees meer' is geen goede linktekst." },
-      { re: />\s*hier\s*</i, msg: "Alleen 'hier' is ook geen goede linktekst." }
+      { re: />\s*hier\s*</i, msg: "Alleen 'hier' is geen goede linktekst." }
     ],
     required: [
-      { re: /<a\s+href="https:\/\/www\.cak\.nl\/s1">[^<]{5,}<\/a>/i, msg: "Geef de link een betekenisvolle tekst van minstens een paar woorden." },
-      { re: /S1-formulier|formulier/i, msg: "Benoem het S1-formulier in de linktekst of in de zin." }
+      { re: /<a\s+href="https:\/\/www\.cak\.nl\/s1">[^<]{5,}<\/a>/i, msg: "Geef de link een betekenisvolle tekst van een paar woorden." },
+      { re: /S1-formulier|formulier/i, msg: "Benoem het S1-formulier in de linktekst." }
     ],
     explain: "Voorbeeld: <code>&lt;a href=\"https://www.cak.nl/s1\"&gt;Download het S1-formulier&lt;/a&gt;</code>"
   },
+  {
+    type: "clean",
+    tag: "Opschonen", tagClass: "warn",
+    q: "Maak de heading-volgorde correct: na een H1 mag geen H3 komen.",
+    initial: `<h1>Belastingaangifte vanuit Thailand</h1>
+<h3>Hoe doe ik aangifte?</h3>
+<p>Lees hieronder de stappen.</p>`,
+    forbidden: [
+      { re: /<h3>\s*Hoe doe ik aangifte\?\s*<\/h3>/i, msg: "Dat is nog een H3." }
+    ],
+    required: [
+      { re: /<h1>\s*Belastingaangifte vanuit Thailand\s*<\/h1>/i, msg: "H1 moet behouden blijven." },
+      { re: /<h2>\s*Hoe doe ik aangifte\?\s*<\/h2>/i, msg: "Maak van 'Hoe doe ik aangifte?' een H2." },
+      { re: /<p>\s*Lees hieronder de stappen\.?\s*<\/p>/i, msg: "Alinea moet behouden blijven." }
+    ],
+    explain: "Na een H1 hoort een H2. Sla nooit een niveau over (slecht voor SEO én screenreaders)."
+  },
 
-  /* ----- Velden ----- */
+  /* ----- SPOT THE POLLUTION ----- */
   {
-    tag: "Velden invullen", type: "multi",
-    q: "Welke velden moeten op een pagina altijd zijn ingevuld voordat je publiceert?",
-    illu: "fields",
-    options: [
-      "Title",
-      "Introduction",
-      "Metadescription",
-      "Topics / Onderwerpen",
-      "Een 'leuk weetje'-veld"
+    type: "spot",
+    tag: "Spot de troep", tagClass: "err",
+    q: "Welke regels in deze HTML zijn vervuild? Klik ze aan.",
+    sub: "Tip: let op Word-resten, inline styles en onveilige links.",
+    lines: [
+      { html: `<h2>Belastingaangifte</h2>`, bad: false },
+      { html: `<p class="MsoNormal">`, bad: true },
+      { html: `  <span style="font-family:Calibri">Doe aangifte voor 1 mei.</span>`, bad: true },
+      { html: `</p>`, bad: false },
+      { html: `<p>Meer info op <a href="http://www.belastingdienst.nl">de site</a>.</p>`, bad: true }
     ],
-    answer: [0,1,2,3],
-    explain: "Title, Introduction, Metadescription en metadata zoals Topics horen altijd ingevuld. Lege metadescription = Google verzint zelf een (vaak slechte) omschrijving."
+    explain: "Regels 2 en 3 zijn Word-troep (MsoNormal, span met font-family). Regel 5 gebruikt http en heeft een vage linktekst ('de site')."
   },
   {
-    tag: "Metadescription", type: "mc",
-    q: "Wat is de juiste lengte voor een metadescription?",
-    options: [
-      "Tussen 50 en 80 tekens",
-      "Tussen 130 en 156 tekens",
-      "Minimaal 200 tekens",
-      "Maakt niet uit — Google bepaalt het toch"
+    type: "spot",
+    tag: "Spot de troep", tagClass: "err",
+    q: "Welke regels zijn fout volgens de schrijfwijzer? Klik aan.",
+    lines: [
+      { html: `<h1>Pensioen aanvragen</h1>`, bad: false },
+      { html: `<h4>Welke documenten?</h4>`, bad: true },
+      { html: `<p>U heeft een <strong>geldig</strong> paspoort nodig.</p>`, bad: true },
+      { html: `<p>Lees meer op de <a href="https://www.svb.nl">website van de SVB</a>.</p>`, bad: false },
+      { html: `<a href="https://www.cak.nl"><u>klik hier</u></a>`, bad: true }
     ],
+    explain: "Regel 2: na H1 mag geen H4. Regel 3: we vetten niet. Regel 5: vage linktekst 'klik hier' én onderstreept (dat doen we niet)."
+  },
+  {
+    type: "spot",
+    tag: "Spot de troep", tagClass: "err",
+    q: "Welke regels gaan in tegen de toegankelijkheidsregels?",
+    lines: [
+      { html: `<img src="/foto.png">`, bad: true },
+      { html: `<img src="/paspoort.png" alt="Voorbeeld paspoort">`, bad: false },
+      { html: `<p>Mail naar <a href="mailto:info@minbuza.nl">deze link</a>.</p>`, bad: true },
+      { html: `<p>Mail naar <a href="mailto:info@minbuza.nl">info@minbuza.nl</a>.</p>`, bad: false },
+      { html: `<table style="background:url(/img/tabel.png)"></table>`, bad: true }
+    ],
+    explain: "Regel 1 mist alt-tekst. Regel 3 gebruikt 'deze link' i.p.v. het e-mailadres voluit. Regel 5 is een tabel als afbeelding — onleesbaar voor screenreaders."
+  },
+
+  /* ----- URL ----- */
+  {
+    type: "url",
+    tag: "URL", tagClass: "ok",
+    q: "Maak de URL voor een pagina over 'De inkomensverklaring aanvragen vanuit Spanje'.",
+    sub: "Regels: kleine letters, koppeltekens, geen lidwoorden, alleen kern-keywords, geen leestekens.",
+    prefix: "/onderwerpen/",
+    placeholder: "bv. inkomensverklaring-spanje",
+    validate: v => {
+      v = v.trim();
+      const e = [];
+      if (!v) e.push("Vul een URL in.");
+      if (v !== v.toLowerCase()) e.push("Alleen kleine letters.");
+      if (/\s/.test(v)) e.push("Geen spaties — gebruik koppeltekens.");
+      if (/[^a-z0-9-]/.test(v)) e.push("Geen leestekens of speciale tekens.");
+      if (/^-|-$/.test(v)) e.push("Geen koppelteken aan begin of einde.");
+      if (/^(de-|het-|een-)/.test(v)) e.push("Laat lidwoorden weg.");
+      if (!/inkomensverklaring/.test(v)) e.push("Bevat 'inkomensverklaring' niet.");
+      if (!/spanje/.test(v)) e.push("Bevat het land 'spanje' niet.");
+      if (v.length > 100) e.push("Te lang (max. 100 tekens).");
+      return e;
+    },
+    explain: "Bijvoorbeeld: <code>inkomensverklaring-spanje</code>. Geen lidwoord, geen hoofdletter, geen leestekens."
+  },
+  {
+    type: "url",
+    tag: "URL", tagClass: "ok",
+    q: "Maak de URL voor 'Het paspoort aanvragen in Duitsland'.",
+    prefix: "/onderwerpen/",
+    placeholder: "bv. paspoort-aanvragen-duitsland",
+    validate: v => {
+      v = v.trim();
+      const e = [];
+      if (!v) e.push("Vul een URL in.");
+      if (v !== v.toLowerCase()) e.push("Alleen kleine letters.");
+      if (/\s/.test(v)) e.push("Geen spaties — gebruik koppeltekens.");
+      if (/[^a-z0-9-]/.test(v)) e.push("Geen leestekens of speciale tekens.");
+      if (/^-|-$/.test(v)) e.push("Geen koppelteken aan begin of einde.");
+      if (/^(de-|het-|een-)/.test(v)) e.push("Laat lidwoorden weg.");
+      if (!/paspoort/.test(v)) e.push("Bevat 'paspoort' niet.");
+      if (!/duitsland/.test(v)) e.push("Bevat 'duitsland' niet.");
+      return e;
+    },
+    explain: "Bijvoorbeeld: <code>paspoort-aanvragen-duitsland</code> of <code>paspoort-duitsland</code>."
+  },
+
+  /* ----- FILL-IN ----- */
+  {
+    type: "fillin",
+    tag: "Invullen", tagClass: "ok",
+    q: "Welke tag gebruik je voor de hoofdtitel van een pagina? Typ alleen de tagnaam (zonder &lt; en &gt;).",
+    placeholder: "bv. h2",
+    validate: v => {
+      v = v.trim().toLowerCase().replace(/[<>]/g,'');
+      if (v === 'h1') return [];
+      if (['h2','h3','h4','h5','h6'].includes(v)) return ["Dat is een subkop, geen hoofdtitel."];
+      if (v === 'title') return ["<title> is voor de browser-tabtitel, niet voor de pagina-hoofdtitel."];
+      return ["De hoofdtitel van een pagina is een H1."];
+    },
+    explain: "De hoofdtitel is een <code>&lt;h1&gt;</code>. Er staat er maar één per pagina."
+  },
+  {
+    type: "fillin",
+    tag: "Invullen", tagClass: "ok",
+    q: "Met welk attribuut geef je een afbeelding een alternatieve tekst? Typ alleen de attribuutnaam.",
+    placeholder: "bv. title",
+    validate: v => {
+      v = v.trim().toLowerCase().replace(/[="']/g,'');
+      if (v === 'alt') return [];
+      if (v === 'title') return ["'title' is een tooltip, geen alternatieve tekst voor screenreaders."];
+      if (v === 'aria-label') return ["aria-label kan in sommige gevallen, maar voor <img> is 'alt' de standaard."];
+      return ["Het standaard-attribuut is 'alt'."];
+    },
+    explain: "<code>alt=\"…\"</code> beschrijft de afbeelding voor screenreaders en wordt getoond als de afbeelding niet laadt."
+  },
+  {
+    type: "fillin",
+    tag: "Invullen", tagClass: "ok",
+    q: "Welk protocol moet elke link op de site beginnen? Typ inclusief de dubbele punt en streepjes.",
+    placeholder: "bv. ftp://",
+    validate: v => {
+      v = v.trim().toLowerCase().replace(/\s/g,'');
+      if (v === 'https://') return [];
+      if (v === 'http://') return ["Onbeveiligd — gebruik https://."];
+      if (v === 'https') return ["Schrijf het volledig met '://'."];
+      return ["Het juiste protocol is https://."];
+    },
+    explain: "Alle externe links beginnen met <code>https://</code>."
+  },
+
+  /* ----- MULTIPLE CHOICE ----- */
+  {
+    type: "mc",
+    tag: "Kennis", tagClass: "muted",
+    q: "Welke heading-volgorde is correct?",
+    options: ["H1 → H3 → H2", "H1 → H2 → H3", "H2 → H1 → H3", "H3 → H2 → H1"],
     answer: 1,
-    explain: "Tussen 130 en 156 tekens (incl. spaties), uniek per pagina, met zoekwoorden en een call to action."
+    explain: "H1 → H2 → H3. Eén H1 per pagina, daaronder H2's, en pas H3 binnen een H2."
   },
   {
-    tag: "Title", type: "mc",
-    q: "Wat is de maximale lengte van een paginatitel volgens de schrijfwijzer?",
+    type: "mc",
+    tag: "Kennis", tagClass: "muted",
+    q: "Wat is een goede linktekst?",
+    options: [
+      "<code>Klik hier</code>",
+      "<code>Lees meer</code>",
+      "<code>Download het S1-formulier</code>",
+      "<code>Deze link</code>"
+    ],
+    answer: 2,
+    explain: "Een betekenisvolle linktekst maakt duidelijk waar je heen gaat — beter voor SEO én toegankelijkheid."
+  },
+  {
+    type: "multi",
+    tag: "Kennis", tagClass: "muted",
+    q: "Welke velden moeten altijd ingevuld zijn voordat je publiceert?",
+    options: ["Title", "Introduction", "Metadescription", "Topics / Onderwerpen", "Een 'leuk weetje'-veld"],
+    answer: [0,1,2,3],
+    explain: "Title, Introduction, Metadescription en metadata zoals Topics zijn verplicht. Lege metadescription = Google verzint zelf iets."
+  },
+  {
+    type: "mc",
+    tag: "Kennis", tagClass: "muted",
+    q: "Hoe lang mag een metadescription zijn?",
+    options: ["50–80 tekens", "130–156 tekens", "Minimaal 200 tekens", "Maakt niet uit"],
+    answer: 1,
+    explain: "130 tot 156 tekens, uniek per pagina, met zoekwoorden en een call to action."
+  },
+  {
+    type: "mc",
+    tag: "Kennis", tagClass: "muted",
+    q: "Wat is de maximale lengte van een paginatitel?",
     options: ["50 tekens", "70 tekens", "100 tekens", "Geen limiet"],
     answer: 1,
-    explain: "Maximaal 70 tekens inclusief spaties. De titel bevat de belangrijkste zoekwoordencombinatie en wordt maar 1 keer op de pagina gebruikt."
+    explain: "Maximaal 70 tekens, inclusief spaties."
   },
   {
-    tag: "Intro", type: "mc",
-    q: "Hoe lang mag een introductie maximaal zijn (richtlijn)?",
-    options: ["20 woorden", "50 woorden", "100 woorden", "150 woorden"],
+    type: "mc",
+    tag: "Kennis", tagClass: "muted",
+    q: "Hoe plaats je een opsomming?",
+    options: [
+      "Met streepjes (-) en <code>&lt;br&gt;</code>",
+      "Met de bullet-knop in het CMS (echte <code>&lt;ul&gt;&lt;li&gt;</code>)",
+      "Met een tabel van 1 kolom",
+      "Met puntkomma's"
+    ],
     answer: 1,
-    explain: "Houd 50 woorden aan als richtlijn. De intro geeft direct antwoord op de vraag in de titel, of vertelt wat de bezoeker op de pagina kan verwachten."
+    explain: "Gebruik echte <ul><li>-lijsten — herkenbaar voor screenreaders."
   },
   {
-    tag: "B1", type: "mc",
-    q: "Maximaal aantal woorden per zin volgens onze B1-richtlijn?",
-    options: ["8", "12 tot 15", "20", "30"],
-    answer: 1,
-    explain: "Houd 12 tot 15 woorden per zin aan. Wissel korte en lange zinnen af; schrijf actief en concreet."
-  },
-  {
-    tag: "Alinea", type: "mc",
-    q: "Een alinea is volgens de schrijfwijzer maximaal hoeveel woorden?",
-    options: ["40", "80", "120", "200"],
-    answer: 1,
-    explain: "Maximaal 80 woorden per alinea, en 1 onderwerp per alinea."
-  },
-
-  /* ----- Tekst & opmaak ----- */
-  {
-    tag: "Vet & onderstrepen", type: "mc",
+    type: "mc",
+    tag: "Kennis", tagClass: "muted",
     q: "Mag je tekst vet of onderstreept maken voor nadruk?",
-    options: [
-      "Ja, vet mag, onderstrepen niet",
-      "Ja, allebei mag",
-      "Nee, allebei niet — we maken teksten niet vet en onderstrepen niet",
-      "Alleen onderstrepen mag, voor links"
-    ],
+    options: ["Ja, allebei", "Vet wel, onderstreept niet", "Geen van beide", "Alleen onderstrepen, voor links"],
     answer: 2,
-    explain: "Schrijfwijzer: we maken tekst niet vet en we onderstrepen niet. Onderstreping wordt visueel verward met links."
-  },
-  {
-    tag: "Linktekst", type: "mc",
-    q: "Welke linktekst is betekenisvol (volgens de schrijfwijzer)?",
-    options: [
-      "Daarvoor heeft u het S1-formulier nodig. U kunt dit <span style='text-decoration:underline'>online downloaden</span>.",
-      "<span style='text-decoration:underline'>Download het S1-formulier</span>.",
-      "<span style='text-decoration:underline'>Klik hier</span> om verder te lezen.",
-      "<span style='text-decoration:underline'>Lees meer</span>."
-    ],
-    answer: 1,
-    explain: "Een betekenisvolle link maakt duidelijk waar je naartoe gaat. 'Klik hier' en 'Lees meer' zijn taboe — slecht voor toegankelijkheid en SEO."
-  },
-  {
-    tag: "Bullets", type: "mc",
-    q: "Je wilt een opsomming van 4 items plaatsen. Wat doe je?",
-    options: [
-      "Typ streepjes (-) voor elk item",
-      "Gebruik de bullets-knop in het CMS",
-      "Maak een tabel met 1 kolom",
-      "Schrijf de items achter elkaar met puntkomma's"
-    ],
-    answer: 1,
-    explain: "Gebruik altijd de bullets van het CMS. Zo herkent voorleessoftware het als opsomming. We gebruiken nooit puntkomma's in opsommingen."
-  },
-  {
-    tag: "Tussenkop", type: "multi",
-    q: "Welke regel klopt voor (tussen)koppen?",
-    options: [
-      "Maximaal 4 tot 5 woorden",
-      "Geen lidwoorden aan het begin",
-      "Geen leestekens (behalve bij een vraag)",
-      "Eindigen altijd met een uitroepteken"
-    ],
-    answer: [0,1,2],
-    explain: "Tussenkop: max 4-5 woorden, geen lidwoord aan het begin, geen leestekens (behalve bij vraagvorm)."
-  },
-
-  /* ----- Links / e-mail / afbeeldingen ----- */
-  {
-    tag: "Externe link", type: "mc",
-    q: "Je linkt naar de website van de RDW. Welke variant is volgens onze richtlijnen?",
-    options: [
-      "Lees meer op deze link.",
-      "Lees meer over het aanvragen van een rijbewijs op de website van de RDW.",
-      "RDW",
-      "https://www.rdw.nl"
-    ],
-    answer: 1,
-    explain: "Maak bij externe links duidelijk naar welke organisatie de link leidt. Rauwe URL's of vage links als 'deze link' zijn niet toegestaan."
-  },
-  {
-    tag: "https", type: "mc",
-    q: "Hoe hoort een externe link in het CMS te beginnen?",
-    illu: "https",
-    options: ["http://", "https://", "www.", "//"],
-    answer: 1,
-    explain: "Altijd https://. Onbeveiligd HTTP wordt door browsers gemarkeerd als 'Niet veilig'."
-  },
-  {
-    tag: "Afbeelding", type: "multi",
-    q: "Je voegt een afbeelding toe. Wat moet je doen?",
-    options: [
-      "Een alt-tekst toevoegen die beschrijft wat de afbeelding toont",
-      "De afbeelding verkleinen (bv. met tiny.png) en max. 830 px breed maken",
-      "De informatie uit de afbeelding ook in de gewone tekst opnemen",
-      "Een tabel als afbeelding plaatsen om de opmaak vast te zetten"
-    ],
-    answer: [0,1,2],
-    explain: "Alt-tekst, verkleinen tot max. 830 px, en informatie ook in tekst. Tabellen mag je NOOIT als afbeelding plaatsen — onleesbaar voor screenreaders."
-  },
-  {
-    tag: "Taalmarkering", type: "mc",
-    q: "Vanaf hoeveel anderstalige woorden plaats je een taalmarkering in het CMS?",
-    options: ["1 woord", "Altijd, vanaf elk woord", "Vanaf 4 woorden", "Vanaf 10 woorden"],
-    answer: 2,
-    explain: "Vanaf 4 woorden plaats je een taalmarkering. Bij 3 of minder geen taalmarkering — wel cursief. Uitzondering: in tabellen altijd taalmarkering."
-  },
-  {
-    tag: "Accordeon", type: "mc",
-    q: "Welke uitspraak over de accordeon (uitklapper) klopt?",
-    options: [
-      "Verberg er zo veel mogelijk content mee, dat oogt rustiger",
-      "Geef uitklappers vage titels, dat maakt nieuwsgierig",
-      "Geef uitklappers duidelijke titels waaruit blijkt wat eronder staat",
-      "Plaats nooit links in een accordeon"
-    ],
-    answer: 2,
-    explain: "Geef uitklappers duidelijke titels, anders ziet de lezer content over het hoofd."
-  },
-  {
-    tag: "E-mailadres", type: "mc",
-    q: "Hoe vermeld je een e-mailadres in een tekst?",
-    options: [
-      "Verborgen onder een 'Stuur een e-mail'-link",
-      "Voluit uitgeschreven, bv. alg@minbuza.nl",
-      "Als afbeelding (tegen spam)",
-      "Alleen als QR-code"
-    ],
-    answer: 1,
-    explain: "Schrijf het e-mailadres voluit. Anders weet de bezoeker niet waar de link heen gaat. Gebruik altijd een algemeen e-mailadres, geen persoonlijk."
-  },
-  {
-    tag: "PDF", type: "mc",
-    q: "Mag je een PDF op de site plaatsen?",
-    options: [
-      "Ja, altijd — PDF is professioneel",
-      "Liever niet; alleen als het écht niet als webpagina kan, en dan toegankelijk gemaakt",
-      "Alleen op de startpagina",
-      "Nee, nooit onder geen enkele voorwaarde"
-    ],
-    answer: 1,
-    explain: "PDF's plaatsen we liever niet. Als het echt nodig is: voldoen aan toegankelijkheidseisen, en achter de link het bestandstype en de grootte vermelden, bv. (PDF, 2 MB)."
+    explain: "We vetten niet en onderstrepen niet. Onderstreping wordt verward met links."
   }
 ];
 
-/* ===================== ENGINE ===================== */
-const NUM = 20;
+/* ========= Engine ========= */
+const N = 20;
 let state = { qs: [], i: 0, score: 0, results: [] };
-
-function shuffle(arr) {
-  const a = arr.slice();
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
 
 function startQuiz() {
   document.getElementById('startScreen').classList.add('hidden');
   document.getElementById('endScreen').classList.add('hidden');
   document.getElementById('quizScreen').classList.remove('hidden');
-  state.qs = shuffle(POOL).slice(0, NUM);
+  state.qs = shuffle(POOL).slice(0, N);
   state.i = 0; state.score = 0; state.results = [];
-  renderQuestion();
+  render();
 }
 
-function renderQuestion() {
+function render() {
   const q = state.qs[state.i];
-  document.getElementById('progressText').textContent = `Vraag ${state.i + 1} van ${state.qs.length}`;
-  document.getElementById('progressBar').style.width = `${(state.i / state.qs.length) * 100}%`;
-  document.getElementById('liveScore').textContent = state.score;
+  document.getElementById('progText').textContent = `Vraag ${state.i + 1} van ${state.qs.length} · Score ${state.score}`;
+  document.getElementById('progBar').style.width = `${(state.i / state.qs.length) * 100}%`;
 
-  const tagClass = q.type === 'multi' ? 'multi' : (q.type === 'html' ? 'html' : (q.type === 'url' ? 'url' : ''));
   const body = document.getElementById('quizBody');
+  let answerBlock = '';
 
-  let answerBlockHtml = '';
   if (q.type === 'mc' || q.type === 'multi') {
     const isMulti = q.type === 'multi';
-    const letters = ['A','B','C','D','E','F'];
-    answerBlockHtml = `
-      <div class="options" id="options">
-        ${q.options.map((opt, idx) => `
-          <div class="option ${isMulti ? 'multi-q' : ''}" data-idx="${idx}" onclick="toggleOption(${idx}, ${isMulti})">
-            <span class="marker"></span>
-            <span class="opt-text"><strong style="color:var(--nww-muted);margin-right:6px">${letters[idx]}.</strong>${opt}</span>
-          </div>
-        `).join('')}
+    answerBlock = `<div class="options">${q.options.map((opt, i) => `
+      <div class="option ${isMulti ? 'multi-q' : ''}" data-i="${i}" onclick="pick(${i}, ${isMulti})">
+        <span class="dot"></span><span>${opt}</span>
+      </div>`).join('')}</div>`;
+  }
+  else if (q.type === 'write' || q.type === 'clean') {
+    answerBlock = `
+      <div class="editor-wrap">
+        <div class="editor-head"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span><span class="file">${q.type === 'write' ? 'nieuw.html' : 'pagina.html'}</span></div>
+        <textarea id="codeIn" class="code-input" spellcheck="false" placeholder="${esc(q.placeholder || '')}" oninput="updatePreview()">${esc(q.initial || '')}</textarea>
+      </div>
+      <div class="preview">
+        <div class="preview-head">Live preview</div>
+        <div class="preview-body" id="preview"></div>
       </div>`;
-  } else if (q.type === 'html') {
-    answerBlockHtml = `
-      <div class="html-task">
-        <div class="label-row"><span>Pas de HTML hieronder aan</span><span>Live preview onderaan</span></div>
-        <textarea id="htmlInput" spellcheck="false" oninput="updatePreview()">${escapeHtml(q.initial)}</textarea>
-        <div class="preview">
-          <div class="ph">Preview</div>
-          <div class="render" id="htmlPreview"></div>
-        </div>
+  }
+  else if (q.type === 'spot') {
+    answerBlock = `
+      <p class="spot-help">Klik op alle regels die <strong>vervuild of fout</strong> zijn. Klik opnieuw om te ontkiezen.</p>
+      <div class="spot" id="spot">
+        ${q.lines.map((ln, i) => `
+          <div class="line" data-i="${i}" onclick="toggleLine(${i})">
+            <span class="ln">${i + 1}</span><code class="cnt">${esc(ln.html)}</code>
+          </div>`).join('')}
       </div>`;
-  } else if (q.type === 'url') {
-    answerBlockHtml = `
-      <div class="url-task">
-        <div class="url-row">
-          <span class="url-prefix">${escapeHtml(q.prefix)}</span>
-          <input class="url-input" id="urlInput" type="text" placeholder="${escapeHtml(q.placeholder)}" spellcheck="false">
-        </div>
+  }
+  else if (q.type === 'url') {
+    answerBlock = `
+      <div class="url-input-wrap">
+        <span class="pfx">https://nederlandwereldwijd.nl${q.prefix}</span>
+        <input id="urlIn" type="text" spellcheck="false" placeholder="${esc(q.placeholder)}">
       </div>`;
-  } else if (q.type === 'fillin') {
-    answerBlockHtml = `
-      <div class="fillin">
-        <input id="fillInput" type="text" placeholder="${escapeHtml(q.placeholder || '')}" spellcheck="false">
-      </div>`;
+  }
+  else if (q.type === 'fillin') {
+    answerBlock = `<input id="fillIn" class="solo" type="text" spellcheck="false" placeholder="${esc(q.placeholder || '')}">`;
   }
 
   body.innerHTML = `
-    <div class="quiz-meta">
-      <span class="tag ${tagClass}">${q.tag}</span>
-      ${q.type === 'multi' ? '<span class="tag multi">Meerdere antwoorden</span>' : ''}
-      ${q.type === 'html' ? '<span class="tag html">HTML-opdracht</span>' : ''}
-      ${q.type === 'url' ? '<span class="tag url">URL-opdracht</span>' : ''}
+    <div class="q-tags">
+      <span class="tag ${q.tagClass || ''}">${q.tag}</span>
+      ${q.type === 'multi' ? '<span class="tag muted">Meerdere antwoorden</span>' : ''}
     </div>
-    <h2>${q.q}</h2>
-    ${q.context ? `<div class="quiz-context">${q.context}</div>` : ''}
-    ${q.illu && ILLU[q.illu] ? `<div class="illu">${ILLU[q.illu]}<div class="caption">Illustratie ter ondersteuning</div></div>` : ''}
-    ${answerBlockHtml}
+    <h2 class="q-title">${q.q}</h2>
+    ${q.sub ? `<p class="q-sub">${q.sub}</p>` : ''}
+    ${answerBlock}
     <div class="feedback" id="feedback"></div>
     <div class="actions">
-      <span style="font-size:13px;color:var(--nww-muted)">Vraag ${state.i + 1} / ${state.qs.length}</span>
+      <span class="live-score">${state.i + 1} / ${state.qs.length}</span>
       <div>
-        <button class="btn secondary" id="checkBtn" onclick="checkAnswer()">Controleer antwoord</button>
-        <button class="btn hidden" id="nextBtn" onclick="nextQuestion()">Volgende</button>
+        <button class="btn ghost" id="checkBtn" onclick="check()">Controleer</button>
+        <button class="btn hidden" id="nextBtn" onclick="next()">Volgende →</button>
       </div>
     </div>
   `;
-  body._selected = new Set();
-  body._answered = false;
-  if (q.type === 'html') updatePreview();
-}
 
-function escapeHtml(s) {
-  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  body._sel = new Set();
+  body._spot = new Set();
+  body._done = false;
+
+  if (q.type === 'write' || q.type === 'clean') updatePreview();
 }
 
 function updatePreview() {
-  const ta = document.getElementById('htmlInput');
-  const pv = document.getElementById('htmlPreview');
+  const ta = document.getElementById('codeIn');
+  const pv = document.getElementById('preview');
   if (!ta || !pv) return;
   pv.innerHTML = ta.value;
 }
 
-function toggleOption(idx, isMulti) {
+function pick(i, multi) {
   const body = document.getElementById('quizBody');
-  if (body._answered) return;
-  const sel = body._selected;
-  if (isMulti) { sel.has(idx) ? sel.delete(idx) : sel.add(idx); }
-  else { sel.clear(); sel.add(idx); }
+  if (body._done) return;
+  const s = body._sel;
+  if (multi) { s.has(i) ? s.delete(i) : s.add(i); }
+  else { s.clear(); s.add(i); }
   document.querySelectorAll('.option').forEach(el => {
-    el.classList.toggle('selected', sel.has(+el.dataset.idx));
+    el.classList.toggle('selected', s.has(+el.dataset.i));
   });
 }
 
-function normalize(s) {
-  return s.replace(/\s+/g, ' ').trim();
+function toggleLine(i) {
+  const body = document.getElementById('quizBody');
+  if (body._done) return;
+  const s = body._spot;
+  s.has(i) ? s.delete(i) : s.add(i);
+  document.querySelectorAll('.spot .line').forEach(el => {
+    el.classList.toggle('selected', s.has(+el.dataset.i));
+  });
 }
 
-function checkAnswer() {
+function check() {
   const body = document.getElementById('quizBody');
-  if (body._answered) return;
+  if (body._done) return;
   const q = state.qs[state.i];
   let ok = false;
   let details = [];
 
   if (q.type === 'mc' || q.type === 'multi') {
-    const sel = body._selected;
-    if (sel.size === 0) return;
-    const correctSet = new Set(q.type === 'multi' ? q.answer : [q.answer]);
-    ok = sel.size === correctSet.size && [...sel].every(x => correctSet.has(x));
+    const s = body._sel;
+    if (!s.size) return;
+    const correct = new Set(q.type === 'multi' ? q.answer : [q.answer]);
+    ok = s.size === correct.size && [...s].every(x => correct.has(x));
     document.querySelectorAll('.option').forEach(el => {
-      const i = +el.dataset.idx;
+      const i = +el.dataset.i;
       el.classList.remove('selected');
-      if (correctSet.has(i)) el.classList.add('correct');
-      else if (sel.has(i)) el.classList.add('wrong');
+      if (correct.has(i)) el.classList.add('correct');
+      else if (s.has(i)) el.classList.add('wrong');
       el.onclick = null;
     });
-  } else if (q.type === 'html') {
-    const val = normalize(document.getElementById('htmlInput').value);
-    const results = [];
+  }
+  else if (q.type === 'write' || q.type === 'clean') {
+    const val = norm(document.getElementById('codeIn').value);
+    if (!val) return;
+    const res = [];
     let allOk = true;
-    for (const r of q.forbidden) {
+    for (const r of (q.forbidden || [])) {
       const hit = r.re.test(val);
-      if (hit) { allOk = false; results.push({ ok: false, msg: r.msg }); }
-      else results.push({ ok: true, msg: r.msg });
+      res.push({ ok: !hit, msg: r.msg });
+      if (hit) allOk = false;
     }
-    for (const r of q.required) {
+    for (const r of (q.required || [])) {
       const hit = r.re.test(val);
-      if (!hit) { allOk = false; results.push({ ok: false, msg: r.msg }); }
-      else results.push({ ok: true, msg: r.msg });
+      res.push({ ok: hit, msg: r.msg });
+      if (!hit) allOk = false;
     }
     ok = allOk;
-    details = results;
-  } else if (q.type === 'url') {
-    const val = document.getElementById('urlInput').value;
+    details = res;
+  }
+  else if (q.type === 'spot') {
+    const s = body._spot;
+    let allOk = true;
+    q.lines.forEach((ln, i) => {
+      const picked = s.has(i);
+      const wantBad = ln.bad;
+      const el = document.querySelector(`.spot .line[data-i="${i}"]`);
+      el.classList.remove('selected');
+      el.onclick = null;
+      if (picked && wantBad) el.classList.add('correct');
+      else if (!picked && wantBad) { el.classList.add('missed'); allOk = false; }
+      else if (picked && !wantBad) { el.classList.add('wrong'); allOk = false; }
+    });
+    ok = allOk;
+  }
+  else if (q.type === 'url') {
+    const val = document.getElementById('urlIn').value;
     if (!val.trim()) return;
     const errs = q.validate(val);
     ok = errs.length === 0;
     details = errs.map(e => ({ ok: false, msg: e }));
-    if (ok) details.push({ ok: true, msg: `Mooi: ${q.prefix}${val.trim()}` });
+    if (ok) details.push({ ok: true, msg: `Mooi: https://nederlandwereldwijd.nl${q.prefix}${val.trim()}` });
+  }
+  else if (q.type === 'fillin') {
+    const val = document.getElementById('fillIn').value;
+    if (!val.trim()) return;
+    const errs = q.validate(val);
+    ok = errs.length === 0;
+    details = errs.map(e => ({ ok: false, msg: e }));
   }
 
-  body._answered = true;
+  body._done = true;
   const fb = document.getElementById('feedback');
   fb.classList.add('show', ok ? 'ok' : 'no');
-  let detailHtml = '';
+  let dh = '';
   if (details.length) {
-    detailHtml = `<ul class="checklist" style="margin:8px 0 0;padding:0;list-style:none">${
-      details.map(d => `<li class="${d.ok ? 'ok' : 'no'}" style="list-style:none;">${d.msg}</li>`).join('')
-    }</ul>`;
+    dh = `<ul class="check-list">${details.map(d => `<li class="${d.ok ? 'ok' : 'no'}">${d.msg}</li>`).join('')}</ul>`;
   }
-  fb.innerHTML = `<strong>${ok ? '✓ Goed!' : '✗ Niet helemaal.'}</strong>${q.explain}${detailHtml}`;
+  fb.innerHTML = `<strong>${ok ? '✓ Goed!' : '✗ Nog niet helemaal.'}</strong>${q.explain}${dh}`;
 
   if (ok) state.score++;
   state.results.push({ q: q.q, ok, explain: q.explain });
-  document.getElementById('liveScore').textContent = state.score;
   document.getElementById('checkBtn').classList.add('hidden');
   document.getElementById('nextBtn').classList.remove('hidden');
-  document.getElementById('nextBtn').textContent = (state.i + 1 === state.qs.length) ? 'Bekijk resultaat' : 'Volgende vraag';
+  document.getElementById('nextBtn').textContent = (state.i + 1 === state.qs.length) ? 'Bekijk resultaat →' : 'Volgende →';
+  document.getElementById('progText').textContent = `Vraag ${state.i + 1} van ${state.qs.length} · Score ${state.score}`;
 }
 
-function nextQuestion() {
+function next() {
   state.i++;
-  if (state.i >= state.qs.length) { showEnd(); }
-  else { renderQuestion(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+  if (state.i >= state.qs.length) showEnd();
+  else { render(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
 }
 
 function showEnd() {
   document.getElementById('quizScreen').classList.add('hidden');
   document.getElementById('endScreen').classList.remove('hidden');
+  document.getElementById('progBar').style.width = '100%';
+  document.getElementById('progText').textContent = `Klaar · ${state.score} / ${state.qs.length}`;
   const total = state.qs.length;
   const pct = Math.round((state.score / total) * 100);
   document.getElementById('scoreNum').textContent = state.score;
   document.getElementById('scoreTotal').textContent = total;
   document.getElementById('scorePct').textContent = pct + '%';
-  let verdict;
-  if (pct >= 90) verdict = '🏆 Topredacteur! Je kent het CMS én de schrijfwijzer op je duimpje.';
-  else if (pct >= 70) verdict = '👍 Goed bezig. Nog wat finetunen op de details en je bent er.';
-  else if (pct >= 50) verdict = '📚 Redelijke basis — neem de schrijfwijzer er nog eens bij.';
-  else verdict = '⚠️ Tijd om de schrijfwijzer goed door te lezen en met het CMS te oefenen.';
-  document.getElementById('verdict').textContent = verdict;
+  let v;
+  if (pct >= 90) v = '🏆 Top — je beheerst HTML én de schrijfwijzer.';
+  else if (pct >= 70) v = '👍 Sterk. Nog wat finetunen op details.';
+  else if (pct >= 50) v = '📚 Redelijke basis — neem de schrijfwijzer er nog eens bij.';
+  else v = '⚠️ Tijd om de schrijfwijzer goed door te lezen en wat HTML te oefenen.';
+  document.getElementById('verdict').textContent = v;
   document.getElementById('review').innerHTML = state.results.map((r, i) => `
-    <div class="r-item ${r.ok ? 'ok' : 'no'}">
-      <div class="r-q"><span class="r-mark">${r.ok ? '✓' : '✗'}</span>${i+1}. ${r.q}</div>
-      <div style="color:#555">${r.explain}</div>
+    <div class="item ${r.ok ? 'ok' : 'no'}">
+      <div class="q"><span class="m">${r.ok ? '✓' : '✗'}</span>${i+1}. ${r.q}</div>
+      <div style="color:#5b6573">${r.explain}</div>
     </div>`).join('');
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
